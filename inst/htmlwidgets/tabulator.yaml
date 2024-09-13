@@ -1,0 +1,6 @@
+dependencies:
+  - name: shiny-tabulator
+    version: 0.1.0
+    src: htmlwidgets
+    script:
+      - dist/shiny-tabulator.js

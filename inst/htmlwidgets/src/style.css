@@ -1,0 +1,24 @@
+.tabulator-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  /* margin-bottom: 10px; */
+  font-size: 12px;
+}
+
+.tabulator-toolbar select,
+.tabulator-toolbar input {
+  padding: 2px 5px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.tabulator-toolbar .link-button {
+  color: #007bff;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.tabulator-toolbar .link-button:hover {
+  text-decoration: underline;
+}

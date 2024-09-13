@@ -1,0 +1,16 @@
+Package: shinyTabulator
+Title: Tabulator.js Integration for R Shiny
+Version: 0.1.0
+Authors@R: person("Fred", "Moser", email = "f@fxi.io", role = c("aut", "cre"))
+Description: Integrates Tabulator.js library with R Shiny for creating interactive tables. Provides functions for creating, rendering, and updating Tabulator widgets within Shiny applications.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports:
+    shiny,
+    htmlwidgets,
+    jsonlite
+Suggests:
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3
+RoxygenNote: 7.1.1
