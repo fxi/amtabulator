@@ -28,6 +28,7 @@ export class TabulatorToolbar {
     this._targetElement.appendChild(this._elToolbar);
 
     this.setupEventListeners();
+    this.onColumnChange();
   }
 
   createSelectionControls() {
@@ -44,21 +45,21 @@ export class TabulatorToolbar {
 
   createColumnSelector() {
     const selector = this.createElement("select", "column-selector");
-    selector.appendChild(this.createOption("", "Select column"));
+    let selected = true;
     this._table.getColumns().forEach((column) => {
-      selector.appendChild(
-        this.createOption(
-          column.getField(),
-          column.getDefinition().title || column.getField()
-        )
-      );
+      const label = column.getDefinition().title || column.getField();
+      const field = column.getField();
+      if (!label || !field) {
+        return;
+      }
+      selector.appendChild(this.createOption(field, label, selected));
+      selected = false;
     });
     return selector;
   }
 
   createOperatorSelector() {
     const selector = this.createElement("select", "operator-selector");
-    selector.appendChild(this.createOption("", "Select operator"));
     return selector;
   }
 
@@ -168,14 +169,19 @@ export class TabulatorToolbar {
   // Helper methods for creating HTML elements
   createElement(tag, className) {
     const element = document.createElement(tag);
-    if (className) element.className = className;
+    if (className) {
+      element.className = className;
+    }
     return element;
   }
 
-  createOption(value, text) {
+  createOption(value, text, selected = false) {
     const option = this.createElement("option");
     option.value = value;
     option.textContent = text;
+    if (selected) {
+      option.setAttribute("selected", true);
+    }
     return option;
   }
 

@@ -4,3 +4,5 @@ dependencies:
     src: htmlwidgets
     script:
       - dist/shiny-tabulator.js
+    stylesheet:
+      - dist/style.css

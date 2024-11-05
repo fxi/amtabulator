@@ -1,0 +1,19 @@
+{
+  "name": "shiny-tabulator",
+  "version": "0.1.0",
+  "description": "Tabulator wrapper for R/Shiny HTMLWidget",
+  "type": "module",
+  "scripts": {
+    "dev": "vite build --watch",
+    "build": "vite build",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "tabulator-tables": "^6.2.5"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0",
+    "vitest": "^2.1.4",
+    "jsdom": "^25.0.1"
+  }
+}
