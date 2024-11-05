@@ -90,7 +90,6 @@ server <- function(input, output, session) {
   # Data changed event listener
   observeEvent(input$irisTable_data_changed, {
     df <- tabulatorToDf(input$irisTable_data_changed)
-    browser()
     output$dataChangedSummary <- renderText({
       sprintf("Data Changed: %d rows affected", nrow(df))
     })
