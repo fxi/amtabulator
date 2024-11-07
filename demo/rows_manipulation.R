@@ -1,5 +1,5 @@
 library(shiny)
-devtools::load_all()
+library(amtabulator)
 
 # Sample data
 initial_data <- data.frame(

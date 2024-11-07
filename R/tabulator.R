@@ -179,7 +179,7 @@ tabulator <- function(
 #' @param message Message from client
 #'
 #' @export
-#' @importFrom htmlwidgets shiny_widget_output
+#' @importFrom htmlwidgets shinyWidgetOutput
 tabulator_to_df <- function(message) {
   if (length(message$data) == 0) {
     return(data.frame())

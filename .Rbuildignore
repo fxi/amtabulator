@@ -1,12 +1,38 @@
-^renv$
-^renv\.lock$
+# R specific files
 ^.*\.Rproj$
 ^\.Rproj\.user$
-^data-raw$
+^renv$
+^renv\.lock$
+^\.Renviron$
+
+# Documentation and development
 ^README\.Rmd$
-^cran-comments\.md$
-^\.travis\.yml$
-^codecov\.yml$
+^README\.md$
+^LICENSE\.md$
+^LICENSE$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^data-raw$
+^documentation\.R$
+
+# CI/CD and testing
+^\.travis\.yml$
+^codecov\.yml$
+^\.github$
+^tests\.R$
+^install\.R$
+
+# JavaScript/Node.js development
+^node_modules$
+^src$
+^vite\.config\.js$
+^package\.json$
+^package-lock\.json$
+
+# Git
+^\.git$
+
+# Development directories
+^demo$
+^inst/htmlwidgets/src$

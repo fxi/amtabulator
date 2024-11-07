@@ -1,6 +1,6 @@
 library(shiny)
+library(amtabulator)
 
-devtools::load_all()
 # Generate 1M rows of test data
 n_rows <- 100e3
 set.seed(123)

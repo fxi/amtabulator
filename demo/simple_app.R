@@ -1,5 +1,5 @@
 library(shiny)
-devtools::load_all()
+library(amtabulator)
 
 # Prepare the iris dataset
 iris_data <- iris
