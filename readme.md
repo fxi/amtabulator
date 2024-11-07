@@ -1,6 +1,5 @@
 # amtabulator
 
-> ⚠️ Early version. Focused on [AccessMod](https://github.com/unige-geohealth/accessmod) requirements. Check [rtabulator](https://github.com/eoda-dev/rtabulator) for a more versatile package.
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
@@ -10,6 +9,8 @@
 [![Build Status](https://github.com/fxi/amtabulator/actions/workflows/r_pkgdown.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
 [![Build Status](https://github.com/fxi/amtabulator/actions/workflows/r_test_coverage.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
 
+
+> ⚠️ Early version. Focused on [AccessMod](https://github.com/unige-geohealth/accessmod) requirements. 
 
 A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny. This package provides an HTMLWidget wrapper around Tabulator.js with enhanced selection capabilities and modern JavaScript tooling.
 
