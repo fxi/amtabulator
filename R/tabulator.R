@@ -10,30 +10,33 @@
 #' @param stretched Stretching mode for columns (default: "all")
 #' @param dropDown A list of dropdown options for specific columns
 #' @param css Optional path to custom CSS file
-#' @param add_selector_bar Boolean to add a selector bar (default: TRUE)
+#' @param add_selector_bar Boolean to add a selector bar (default: FALSE)
 #' @param add_select_column Boolean to add a select column (default: FALSE)
-#' @param select_column_name Name for the select column (default: "amSelect")
+#' @param return_select_column Boolean to include selection status in returned data (default: FALSE)
+#' @param return_select_column_name Name for the returned selection column (default: "row_select")
+#'
 #'
 #' @export
 #' @importFrom htmlwidgets createWidget
 tabulator <- function(
-  data,
-  options = list(),
-  elementId = NULL,
-  readOnly = FALSE,
-  columnHeaders = NULL,
-  hide = NULL,
-  fixedCols = NULL,
-  stretched = c("all", "last", "none"),
-  dropDown = list(),
-  css = NULL,
-  add_selector_bar = TRUE,
-  add_select_column = FALSE,
-  select_column_name = "amSelect"
-) {
+    data,
+    options = list(),
+    elementId = NULL,
+    readOnly = FALSE,
+    columnHeaders = NULL,
+    hide = NULL,
+    fixedCols = NULL,
+    stretched = c("all", "last", "none"),
+    dropDown = list(),
+    css = NULL,
+    add_selector_bar = FALSE,
+    add_select_column = FALSE,
+    return_select_column = FALSE,
+    return_select_column_name = "row_select") {
   # Prepare data and columns
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
+
 
   if (is.null(columnHeaders)) {
     columnHeaders <- colNames
@@ -116,10 +119,11 @@ tabulator <- function(
 
   # Default options
   default_options <- list(
-    # shinyTabulator options
+    # shiny_tbulator options
     add_selector_bar = add_selector_bar,
     add_select_column = add_select_column,
-    select_column_name = select_column_name,
+    return_select_column = return_select_column,
+    return_select_column_name = return_select_column_name,
     # tabulator options
     columns = columns,
     index = NULL,
@@ -147,10 +151,11 @@ tabulator <- function(
   options <- modifyList(default_options, options)
 
   # Prepare dependencies
-  deps <- htmlwidgets::getDependency("tabulator", "shinyTabulator")
+  deps <- htmlwidgets::getDependency("amtabulator", "amtabulator")
+
   if (!is.null(css)) {
     deps <- c(deps, htmltools::htmlDependency(
-      name = "custom-tabulator-css",
+      name = "amtabulator-css",
       version = "0.1.0",
       src = dirname(css),
       stylesheet = basename(css)
@@ -159,9 +164,9 @@ tabulator <- function(
 
   # Create and return the widget
   htmlwidgets::createWidget(
-    name = "tabulator",
+    name = "amtabulator",
     x = list(options = options),
-    package = "shinyTabulator",
+    package = "amtabulator",
     elementId = elementId,
     dependencies = deps
   )
@@ -174,8 +179,8 @@ tabulator <- function(
 #' @param message Message from client
 #'
 #' @export
-#' @importFrom htmlwidgets shinyWidgetOutput
-tabulatorToDf <- function(message) {
+#' @importFrom htmlwidgets shiny_widget_output
+tabulator_to_df <- function(message) {
   if (length(message$data) == 0) {
     return(data.frame())
   }
@@ -197,16 +202,15 @@ tabulatorToDf <- function(message) {
 #'
 #' @export
 #' @importFrom htmlwidgets shinyWidgetOutput
-tabulatorOutput <- function(
-  outputId,
-  width = "100%",
-  height = "400px"
-) {
+tabulator_output <- function(
+    outputId,
+    width = "100%",
+    height = "400px") {
   htmlwidgets::shinyWidgetOutput(
-    outputId, "tabulator",
+    outputId, "amtabulator",
     width,
     height,
-    package = "shinyTabulator"
+    package = "amtabulator"
   )
 }
 
@@ -218,32 +222,54 @@ tabulatorOutput <- function(
 #'
 #' @export
 #' @importFrom htmlwidgets shinyRenderWidget
-renderTabulator <- function(expr,
-  env = parent.frame(),
-  quoted = FALSE) {
+render_tabulator <- function(
+    expr,
+    env = parent.frame(),
+    quoted = FALSE) {
   if (!quoted) {
     expr <- substitute(expr)
   }
-  htmlwidgets::shinyRenderWidget(expr, tabulatorOutput, env, quoted = TRUE)
+  htmlwidgets::shinyRenderWidget(expr, tabulator_output, env, quoted = TRUE)
 }
 
 #' Create a Tabulator proxy object
 #'
-#' @param inputId The ID of the Tabulator input element
+#' @param input_id The ID of the Tabulator input element
 #' @param session The Shiny session object
 #'
 #' @export
 #' @importFrom shiny getDefaultReactiveDomain
-tabulatorProxy <- function(inputId,
-  session = shiny::getDefaultReactiveDomain()) {
+tabulator_proxy <- function(
+    input_id,
+    session = shiny::getDefaultReactiveDomain()) {
   structure(
     list(
-      inputId = session$ns(inputId),
+      input_id = session$ns(input_id),
       session = session
     ),
-    class = "tabulator_proxy"
+    class = "amtabulator_proxy"
   )
 }
+
+
+#' Trigger data input ( refresh )
+#'
+#' @param proxy A Tabulator proxy object
+#'
+#' @export
+tabulator_trigger_data <- function(proxy) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "trigger_data"
+    )
+  )
+}
+
 
 #' Update Tabulator data
 #'
@@ -252,8 +278,8 @@ tabulatorProxy <- function(inputId,
 #' @param chunk_size The number of rows to update in each chunk (default: 1000)
 #'
 #' @export
-tabulatorUpdateData <- function(proxy, data, chunk_size = 1000) {
-  if (!inherits(proxy, "tabulator_proxy")) {
+tabulator_update_data <- function(proxy, data, chunk_size = 1000) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
     stop("Invalid tabulator_proxy object")
   }
 
@@ -263,9 +289,9 @@ tabulatorUpdateData <- function(proxy, data, chunk_size = 1000) {
     chunk <- data_chunks[[i]]
 
     proxy$session$sendCustomMessage(
-      type = "tabulator-update",
+      type = "tabulator_action",
       message = list(
-        id = proxy$inputId,
+        id = proxy$input_id,
         action = "update_data",
         value = list(
           data = chunk,
@@ -288,15 +314,15 @@ tabulatorUpdateData <- function(proxy, data, chunk_size = 1000) {
 #' @param chunk_size The number of rows to update in each chunk (default: 1000)
 #'
 #' @export
-tabulatorUpdateWhere <- function(
-  proxy,
-  col,
-  value,
-  whereCol,
-  whereValue,
-  operator = "==",
-  chunk_size = 1000) {
-  if (!inherits(proxy, "tabulator_proxy")) {
+tabulator_update_where <- function(
+    proxy,
+    col,
+    value,
+    whereCol,
+    whereValue,
+    operator = "==",
+    chunk_size = 1000) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
     stop("Invalid tabulator_proxy object")
   }
 
@@ -309,8 +335,125 @@ tabulatorUpdateWhere <- function(
     chunk_size = chunk_size
   )
 
+
   proxy$session$sendCustomMessage(
-    type = "tabulator-update",
-    message = list(id = proxy$inputId, action = "update_where", value = message)
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "update_where",
+      value = message
+    )
+  )
+}
+
+#' Add rows to a Tabulator table
+#'
+#' @param proxy A Tabulator proxy object
+#' @param data A list or data frame containing the rows to add
+#' @param position Optional position to insert rows ("top" or "bottom", default: "bottom")
+#'
+#' @export
+tabulator_add_rows <- function(proxy, data, position = "bottom") {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+
+  # Validate position parameter
+  if (!position %in% c("top", "bottom")) {
+    stop("Position must be either 'top' or 'bottom'")
+  }
+
+  # Validate data
+  if (is.null(data)) {
+    stop("Data cannot be NULL")
+  }
+
+  if (!is.list(data) || length(data) == 0) {
+    stop("Data must be a non-empty list or data frame")
+  }
+
+  # Check if all elements have the same length
+  lengths <- unique(lengths(data))
+  if (length(lengths) != 1) {
+    stop("All columns in data must have the same length")
+  }
+
+  if (lengths[1] == 0) {
+    stop("Data must contain at least one row")
+  }
+
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "add_rows",
+      value = list(
+        data = data,
+        position = position
+      )
+    )
+  )
+}
+
+#' Remove specific rows from a Tabulator table
+#'
+#' @param proxy A Tabulator proxy object
+#' @param row_ids A vector of row IDs to remove
+#'
+#' @export
+tabulator_remove_rows <- function(proxy, row_ids) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+
+  if (is.null(row_ids) || length(row_ids) == 0) {
+    stop("row_ids must be a non-empty vector")
+  }
+
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "remove_rows",
+      value = row_ids
+    )
+  )
+}
+
+#' Remove the first row from a Tabulator table
+#'
+#' @param proxy A Tabulator proxy object
+#'
+#' @export
+tabulator_remove_first_row <- function(proxy) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "remove_first_row"
+    )
+  )
+}
+
+#' Remove the last row from a Tabulator table
+#'
+#' @param proxy A Tabulator proxy object
+#'
+#' @export
+tabulator_remove_last_row <- function(proxy) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "remove_last_row"
+    )
   )
 }

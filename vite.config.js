@@ -5,8 +5,8 @@ export default defineConfig({
   build: {
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
-      name: 'ShinyTabulator',
-      fileName: () => 'shiny-tabulator.js',  // Force .js extension
+      name: 'amtabulator',
+      fileName: () => 'amtabulator.js',  // Force .js extension
       formats: ['umd']
     },
     outDir: 'inst/htmlwidgets/dist',
@@ -17,7 +17,7 @@ export default defineConfig({
         manualChunks: undefined,
         inlineDynamicImports: true,
         format: 'umd',
-        entryFileNames: 'shiny-tabulator.js'  // Ensure correct filename
+        entryFileNames: 'amtabulator.js'  // Ensure correct filename
       }
     }
   },

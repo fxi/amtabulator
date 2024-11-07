@@ -1,5 +1,5 @@
 library(shiny)
-library(shinyTabulator) # Assuming this is the name of your package
+devtools::load_all()
 
 # Prepare the iris dataset
 iris_data <- iris
@@ -8,24 +8,22 @@ iris_data$large <- iris_data$petal_width > 1
 iris_data$cat <- seq_len(nrow(iris_data))
 iris_data <- iris_data[, c("cat", setdiff(names(iris_data), "cat"))]
 
-devtools::load_all()
-
-
-
 ui <- fluidPage(
   titlePanel("Iris Dataset Tabulator Demo with Event Listeners"),
   sidebarLayout(
     sidebarPanel(
       actionButton("updateBtn", "Update Random sepal length"),
       actionButton("updateConditionalBtn", "Update sepal Length 0 where Petal Length > 5"),
+      actionButton("submitBtn", "Submit"),
       hr(),
       h4("Event Summaries"),
       verbatimTextOutput("cellEditSummary"),
       verbatimTextOutput("selectionSummary"),
-      verbatimTextOutput("dataChangedSummary")
+      verbatimTextOutput("dataChangedSummary"),
+      verbatimTextOutput("submitSummary")
     ),
     mainPanel(
-      tabulatorOutput("irisTable")
+      tabulator_output("iris_table")
     )
   )
 )
@@ -36,11 +34,13 @@ server <- function(input, output, session) {
 
   read_only <- !(names(iris_data) %in% "species")
 
-  output$irisTable <- renderTabulator({
+  output$iris_table <- render_tabulator({
     tabulator(
       data = isolate(react_iris_data()), # prevent re-initialization
       add_selector_bar = TRUE,
       add_select_column = TRUE,
+      return_select_column_name = "am_select",
+      return_select_column = TRUE,
       readOnly = read_only,
       fixed = "cat",
       options = list(
@@ -49,17 +49,20 @@ server <- function(input, output, session) {
     )
   })
 
+
+
+
   observeEvent(input$updateBtn, {
-    proxy <- tabulatorProxy("irisTable")
+    proxy <- tabulator_proxy("iris_table")
     new_data <- react_iris_data()
     new_data$sepal_length <- round(runif(nrow(new_data), min = 4, max = 8), 1)
     react_iris_data(new_data)
-    tabulatorUpdateData(proxy, new_data)
+    tabulator_update_data(proxy, react_iris_data())
   })
 
   observeEvent(input$updateConditionalBtn, {
-    proxy <- tabulatorProxy("irisTable")
-    tabulatorUpdateWhere(proxy,
+    proxy <- tabulator_proxy("iris_table")
+    tabulator_update_where(proxy,
       col = "sepal_length",
       value = 0,
       whereCol = "petal_length",
@@ -69,8 +72,8 @@ server <- function(input, output, session) {
   })
 
   # Cell edit event listener
-  observeEvent(input$irisTable_cell_edit, {
-    edit_info <- input$irisTable_cell_edit
+  observeEvent(input$iris_table_cell_edit, {
+    edit_info <- input$iris_table_cell_edit
     output$cellEditSummary <- renderText({
       sprintf(
         "Cell Edited: Row %s, Column: %s, Old Value: %s, New Value: %s",
@@ -80,18 +83,31 @@ server <- function(input, output, session) {
   })
 
   # Selection event listener
-  observeEvent(input$irisTable_data_selection, {
-    df <- tabulatorToDf(input$irisTable_data_selection)
+  observeEvent(input$iris_table_selection, {
+    df <- tabulator_to_df(input$iris_table_selection)
     output$selectionSummary <- renderText({
       sprintf("Rows Selected: %d", nrow(df))
     })
   })
 
-  # Data changed event listener
-  observeEvent(input$irisTable_data_changed, {
-    df <- tabulatorToDf(input$irisTable_data_changed)
-    output$dataChangedSummary <- renderText({
-      sprintf("Data Changed: %d rows affected", nrow(df))
+  observeEvent(input$submitBtn, {
+    df <- tabulator_to_df(input$iris_table_data)
+    df_select <- tabulator_to_df(input$iris_table_selection)
+
+    n_df_select <- nrow(df_select)
+    n_df <- nrow(df)
+    n_df_checked <- nrow(df[df$am_select, ])
+
+    output$submitSummary <- renderText({
+      sprintf(
+        "Submited
+        \n-table: %d
+        \n-selected %d
+        \n-checked %d",
+        n_df,
+        n_df_select,
+        n_df_checked
+      )
     })
   })
 }

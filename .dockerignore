@@ -1,0 +1,42 @@
+# Ignore R build and temp files
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+.Rbuildignore
+
+# Ignore R package build files and caches
+.Rproj.user/
+*.Rproj
+*.RData
+*.Rhistory
+__pycache__/
+renv/library/
+renv/staging/
+
+# Ignore local configuration files
+.Renviron
+.Rprofile
+
+# Node.js related ignores
+node_modules/
+npm-debug.log
+yarn-error.log
+.vscode/
+dist/
+build/
+coverage/
+
+# General files
+.DS_Store
+Thumbs.db
+.idea/
+*.log
+
+# Git files
+.git
+.gitignore
+
+# Docker-related files (optional to avoid nested Dockerfiles)
+Dockerfile
+.dockerignore

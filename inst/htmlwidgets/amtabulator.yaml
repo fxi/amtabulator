@@ -1,8 +1,8 @@
 dependencies:
-  - name: shiny-tabulator
+  - name: amtabulator
     version: 0.1.0
     src: htmlwidgets
     script:
-      - dist/shiny-tabulator.js
+      - dist/amtabulator.js
     stylesheet:
       - dist/style.css

@@ -1,17 +1,17 @@
 import "./style.css";
 
 export class TabulatorToolbar {
-  constructor(table, targetElement) {
+  constructor(table, elTarget) {
     this._table = table;
-    this._targetElement = targetElement;
-    this._elToolbar = null;
+    this._elToolbar = elTarget;
     this._elColSelector = null;
     this._elOpSelector = null;
     this._elValueInput = null;
   }
 
   createToolbar() {
-    this._elToolbar = this.createElement("div", "tabulator-toolbar");
+
+    this._elToolbar.classList.add('tabulator-toolbar');
 
     const selectionControls = this.createSelectionControls();
     this._elColSelector = this.createColumnSelector();
@@ -25,7 +25,6 @@ export class TabulatorToolbar {
     this._elToolbar.appendChild(this._elValueInput);
     this._elToolbar.appendChild(actionButtons);
 
-    this._targetElement.appendChild(this._elToolbar);
 
     this.setupEventListeners();
     this.onColumnChange();

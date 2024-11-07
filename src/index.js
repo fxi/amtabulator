@@ -1,43 +1,52 @@
 import { TabulatorWidget } from "./TabulatorWidget";
 
 HTMLWidgets.widget({
-  name: "tabulator",
+  name: "amtabulator",
   type: "output",
+  renderOnNullValue: true,
   factory: function (el) {
+    const widget = new TabulatorWidget(el);
+
     const callbacks = [
       [
-        "dataChanged",
+        ["dataChanged", "dataLoaded", "rowSelectionChanged"],
+        function () {
+          /*
+           * also updating input when selection change
+           * - checkbox selection change the data
+           *   when 'return_select_column' is true
+           * - requesting data update with 'trigger_data' requires another step 
+           */
+          Shiny.setInputValue(`${el.id}_data`, {
+            data: JSON.stringify(widget.getData()),
+          });
+        },
+      ],
+      [
+        ["rowSelectionChanged"],
         function (data) {
-          Shiny.setInputValue(el.id + "_data_changed", {
+          Shiny.setInputValue(`${el.id}_selection`, {
             data: JSON.stringify(data),
           });
         },
       ],
       [
-        "rowSelectionChanged",
-        function (data) {
-          Shiny.setInputValue(el.id + "_data_selection", {
-            data: JSON.stringify(data),
-          });
-        },
-      ],
-      [
-        "cellEdited",
+        ["cellEdited"],
         function (cell) {
-          Shiny.setInputValue(el.id + "_cell_edit", {
+          const data = {
             row: cell.getRow().getData(),
             column: cell.getColumn().getField(),
             oldValue: cell.getOldValue(),
             newValue: cell.getValue(),
-          });
+          };
+
+          Shiny.setInputValue(`${el.id}_cell_edit`, data);
         },
       ],
     ];
 
-    const widget = new TabulatorWidget(el, callbacks);
-
     return {
-      renderValue: (x) => widget.renderValue(x),
+      renderValue: (config) => widget.init(config, callbacks),
       resize: (width, height) => widget.resize(width, height),
       getTable: () => widget.getTable(),
       instance: widget,
@@ -45,8 +54,13 @@ HTMLWidgets.widget({
   },
 });
 
-Shiny.addCustomMessageHandler("tabulator-update", async function (message) {
+/**
+ * Should handle more action : get_data, set_data, undo, redo
+ */
+
+Shiny.addCustomMessageHandler("tabulator_action", async function (message) {
   const { id, action, value } = message;
+
   const { instance: tabulatorWidget } = HTMLWidgets.find("#" + id);
 
   if (!tabulatorWidget) {
@@ -54,5 +68,27 @@ Shiny.addCustomMessageHandler("tabulator-update", async function (message) {
     return;
   }
 
-  await tabulatorWidget.update(action, value);
+  switch (action) {
+    case "update_data":
+    case "update_where":
+      await tabulatorWidget.update(action, value);
+      break;
+    case "add_rows":
+      await tabulatorWidget.addRows(value.data, value.position);
+      break;
+    case "remove_rows":
+      await tabulatorWidget.removeRows(value);
+      break;
+    case "remove_first_row":
+      await tabulatorWidget.removeFirstRow();
+      break;
+    case "remove_last_row":
+      await tabulatorWidget.removeLastRow();
+      break;
+    case "trigger_data":
+      const data = await tabulatorWidget.getData();
+      Shiny.setInputValue(id + "_data", {
+        data: JSON.stringify(data),
+      });
+  }
 });

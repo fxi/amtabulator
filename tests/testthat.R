@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(shinyTabulator)
+library(amtabulator)
 
-test_check("shinyTabulator")
+test_check("amtabulator")

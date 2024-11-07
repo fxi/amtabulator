@@ -1,40 +1,44 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { JSDOM } from 'jsdom';
-import { TabulatorWidget } from './TabulatorWidget';
-import { TabulatorFull as Tabulator } from 'tabulator-tables';
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { JSDOM } from "jsdom";
+import { TabulatorWidget } from "./TabulatorWidget";
+import { TabulatorFull as Tabulator } from "tabulator-tables";
 
 // Setup DOM environment
-const dom = new JSDOM('<!DOCTYPE html><html><body></body></html>');
+const dom = new JSDOM("<!DOCTYPE html><html><body></body></html>");
 global.document = dom.window.document;
 global.window = dom.window;
 global.Element = dom.window.Element;
 global.HTMLElement = dom.window.HTMLElement;
 
-// Mock Tabulator
-vi.mock('tabulator-tables', () => ({
+// Mock Tabulator with row manipulation methods
+vi.mock("tabulator-tables", () => ({
   TabulatorFull: vi.fn().mockImplementation(() => ({
     on: vi.fn(),
     destroy: vi.fn(),
     setFilter: vi.fn(),
     updateData: vi.fn(),
+    replaceData: vi.fn(),
     getData: vi.fn().mockReturnValue([]),
     setData: vi.fn(),
     searchRows: vi.fn(),
-    redraw: vi.fn()
-  }))
+    redraw: vi.fn(),
+    addData: vi.fn(),
+    getRow: vi.fn(),
+    getRows: vi.fn(),
+  })),
 }));
 
-describe('TabulatorWidget', () => {
+describe("TabulatorWidget Row Manipulation", () => {
   let widget;
   let element;
   let callbacks;
 
   beforeEach(() => {
-    // Setup DOM element and callbacks
-    element = document.createElement('div');
+    element = document.createElement("div");
     document.body.appendChild(element);
-    callbacks = new Map([['rowClick', vi.fn()]]);
+    callbacks = new Map([["rowClick", vi.fn()]]);
     widget = new TabulatorWidget(element, callbacks);
+    widget.init({ options: { data: [] } });
   });
 
   afterEach(() => {
@@ -47,115 +51,187 @@ describe('TabulatorWidget', () => {
     vi.clearAllMocks();
   });
 
-  // Test 1: Initialization and renderValue
-  it('should properly initialize and render the table with correct options', () => {
-    const options = {
-      data: [{ id: 1, name: 'Test' }],
-      add_select_column: true,
-      columns: [{ title: 'Name', field: 'name' }]
-    };
+  // Test addRows functionality
+  describe("addRows", () => {
+    it("should add rows at the bottom by default", async () => {
+      const newData = [
+        { id: 1, name: "John" },
+        { id: 2, name: "Jane" },
+      ];
 
-    widget.renderValue({ options });
+      await widget.addRows(newData);
 
-    expect(Tabulator).toHaveBeenCalledWith(element, expect.objectContaining({
-      data: [{ id: 1, name: 'Test' }],
-      columns: [
-        {
-          formatter: 'rowSelection',
-          titleFormatter: 'rowSelection',
-          headerSort: false,
-          width: 50,
-          headerFilter: false,
-          frozen: true,
-          headerTooltip: false,
-          tooltip: false,
-          resizable: false
-        },
-        { title: 'Name', field: 'name' }
-      ]
-    }));
-    expect(widget.table).toBeTruthy();
-  });
-
-  // Test 2: Data format conversion
-  it('should correctly format table data from object of arrays to array of objects', () => {
-    const inputData = {
-      id: [1, 2, 3],
-      name: ['Alice', 'Bob', 'Charlie']
-    };
-
-    const expectedOutput = [
-      { id: 1, name: 'Alice' },
-      { id: 2, name: 'Bob' },
-      { id: 3, name: 'Charlie' }
-    ];
-
-    const result = widget.formatTable(inputData);
-    expect(result).toEqual(expectedOutput);
-  });
-
-  // Test 3: Update functionality
-  it('should handle data updates correctly', async () => {
-    widget.renderValue({ options: { data: [] } });
-
-    const updatePayload = {
-      data: [{ id: 1, name: 'New Data' }],
-      chunk: 1,
-      total_chunks: 1
-    };
-
-    await widget.update('update_data', updatePayload);
-
-    expect(widget.table.updateData).toHaveBeenCalledWith([{ id: 1, name: 'New Data' }]);
-    expect(widget.table.setData).toHaveBeenCalled();
-  });
-
-  // Test 4: Error handling
-  it('should handle errors gracefully during table creation', () => {
-    const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    Tabulator.mockImplementationOnce(() => {
-      throw new Error('Tabulator initialization failed');
+      expect(widget.table.addData).toHaveBeenCalledWith(newData, false);
+      expect(widget.table.getData).toHaveBeenCalled();
+      expect(widget.table.setData).toHaveBeenCalled();
     });
 
-    widget.renderValue({ options: {} });
+    it("should add rows at the top when specified", async () => {
+      const newData = [{ id: 1, name: "John" }];
 
-    expect(consoleSpy).toHaveBeenCalledWith(
-      'Error creating Tabulator instance:',
-      expect.any(Error)
-    );
-    expect(widget.table).toBeFalsy();
-    consoleSpy.mockRestore();
-  });
+      await widget.addRows(newData, "top");
 
-  // Test 5: Complex updateWhere functionality
-  it('should correctly handle updateWhere operations with chunking', async () => {
-    widget.renderValue({ options: { data: [] } });
-    
-    const mockMatchingRows = [
-      { getData: () => ({ id: 1, value: 'old' }) },
-      { getData: () => ({ id: 2, value: 'old' }) },
-      { getData: () => ({ id: 3, value: 'old' }) }
-    ];
-
-    widget.table.searchRows.mockReturnValue(mockMatchingRows);
-
-    await widget.updateWhere({
-      col: 'value',
-      value: 'new',
-      whereCol: 'id',
-      whereValue: [1, 2, 3],
-      operator: 'in',
-      chunk_size: 2
+      expect(widget.table.addData).toHaveBeenCalledWith(newData, true);
     });
 
-    // Should have called updateData twice due to chunk_size of 2
-    expect(widget.table.updateData).toHaveBeenCalledTimes(2);
-    expect(widget.table.updateData).toHaveBeenNthCalledWith(1, [
-      { id: 1, value: 'new' },
-      { id: 2, value: 'new' }
-    ]);
-    expect(widget.table.updateData).toHaveBeenNthCalledWith(2, [
-      { id: 3, value: 'new' }
-    ]);
+    it("should handle array and object inputs correctly", async () => {
+      const arrayData = [{ id: 1, name: "John" }];
+      const objectData = {
+        id: [1],
+        name: ["John"],
+      };
+
+      await widget.addRows(arrayData);
+      expect(widget.table.addData).toHaveBeenCalledWith(arrayData, false);
+
+      await widget.addRows(objectData);
+      expect(widget.table.addData).toHaveBeenCalledWith(
+        [{ id: 1, name: "John" }],
+        false
+      );
+    });
+
+    it("should handle errors gracefully", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+      widget.table.addData.mockRejectedValueOnce(new Error("Add data failed"));
+
+      await widget.addRows([{ id: 1 }]);
+
+      expect(consoleSpy).toHaveBeenCalledWith(
+        "Error adding rows:",
+        expect.any(Error)
+      );
+      consoleSpy.mockRestore();
+    });
+  });
+
+  // Test removeRows functionality
+  describe("removeRows", () => {
+    it("should remove specified rows by ID", async () => {
+      const mockRow1 = { delete: vi.fn() };
+      const mockRow2 = { delete: vi.fn() };
+
+      widget.table.getRow
+        .mockReturnValueOnce(mockRow1)
+        .mockReturnValueOnce(mockRow2);
+
+      await widget.removeRows(["row1", "row2"]);
+
+      expect(widget.table.getRow).toHaveBeenCalledTimes(2);
+      expect(mockRow1.delete).toHaveBeenCalled();
+      expect(mockRow2.delete).toHaveBeenCalled();
+      expect(widget.table.getData).toHaveBeenCalled();
+      expect(widget.table.setData).toHaveBeenCalled();
+    });
+
+    it("should handle non-existent row IDs gracefully", async () => {
+      widget.table.getRow.mockReturnValue(null);
+
+      await widget.removeRows(["nonexistent"]);
+
+      expect(widget.table.getData).toHaveBeenCalled();
+      expect(widget.table.setData).toHaveBeenCalled();
+    });
+  });
+
+  // Test removeFirstRow functionality
+  describe("removeFirstRow", () => {
+    it("should remove the first row", async () => {
+      const mockFirstRow = { delete: vi.fn() };
+      widget.table.getRows.mockReturnValue([mockFirstRow]);
+
+      await widget.removeFirstRow();
+
+      expect(widget.table.getRows).toHaveBeenCalled();
+      expect(mockFirstRow.delete).toHaveBeenCalled();
+      expect(widget.table.getData).toHaveBeenCalled();
+      expect(widget.table.setData).toHaveBeenCalled();
+    });
+
+    it("should handle empty table gracefully", async () => {
+      widget.table.getRows.mockReturnValue([]);
+
+      await widget.removeFirstRow();
+
+      expect(widget.table.getData).not.toHaveBeenCalled();
+      expect(widget.table.setData).not.toHaveBeenCalled();
+    });
+  });
+
+  // Test removeLastRow functionality
+  describe("removeLastRow", () => {
+    it("should remove the last row", async () => {
+      const mockLastRow = { delete: vi.fn() };
+      widget.table.getRows.mockReturnValue([{}, {}, mockLastRow]);
+
+      await widget.removeLastRow();
+
+      expect(widget.table.getRows).toHaveBeenCalled();
+      expect(mockLastRow.delete).toHaveBeenCalled();
+      expect(widget.table.getData).toHaveBeenCalled();
+      expect(widget.table.setData).toHaveBeenCalled();
+    });
+
+    it("should handle empty table gracefully", async () => {
+      widget.table.getRows.mockReturnValue([]);
+
+      await widget.removeLastRow();
+
+      expect(widget.table.getData).not.toHaveBeenCalled();
+      expect(widget.table.setData).not.toHaveBeenCalled();
+    });
+  });
+
+  // Test error handling for all methods when table is not initialized
+  describe("error handling without table", () => {
+    beforeEach(() => {
+      widget.table = null;
+    });
+
+    it("should handle addRows when table is not initialized", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      await widget.addRows([{ id: 1 }]);
+
+      expect(consoleSpy).toHaveBeenCalledWith("Table instance not found");
+      consoleSpy.mockRestore();
+    });
+
+    it("should handle removeRows when table is not initialized", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      await widget.removeRows(["row1"]);
+
+      expect(consoleSpy).toHaveBeenCalledWith("Table instance not found");
+      consoleSpy.mockRestore();
+    });
+
+    it("should handle removeFirstRow when table is not initialized", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      await widget.removeFirstRow();
+
+      expect(consoleSpy).toHaveBeenCalledWith("Table instance not found");
+      consoleSpy.mockRestore();
+    });
+
+    it("should handle removeLastRow when table is not initialized", async () => {
+      const consoleSpy = vi
+        .spyOn(console, "error")
+        .mockImplementation(() => {});
+
+      await widget.removeLastRow();
+
+      expect(consoleSpy).toHaveBeenCalledWith("Table instance not found");
+      consoleSpy.mockRestore();
+    });
   });
 });

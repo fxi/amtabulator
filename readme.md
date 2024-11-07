@@ -8,7 +8,7 @@ Install the development version from GitHub:
 
 ```r
 # install.packages("pak")
-pak::pkg_install("fxi/shinyTabulator")
+pak::pkg_install("fxi/shiny_tabulator")
 ```
 
 ## Key Features
@@ -30,7 +30,7 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
-  output$myTable <- renderTabulator({
+  output$myTable <- render_tabulator({
     tabulator(
       data = mtcars,
       options = list(
@@ -56,8 +56,8 @@ shinyApp(ui, server)
 Use `tabulatorProxy()` and `tabulatorUpdateData()` to update table data:
 
 ```r
-proxy <- tabulatorProxy("myTable")
-tabulatorUpdateData(proxy, newData)
+proxy <- tabulator_proxy("myTable")
+tabulator_update_data(proxy, newData)
 ```
 
 ### Event Handling
@@ -83,7 +83,7 @@ observeEvent(input$myTable_data_changed, {
 Update specific cells based on conditions:
 
 ```r
-tabulatorUpdateWhere(proxy,
+tabulator_update_where(proxy,
   col = "mpg",
   value = 0,
   whereCol = "cyl",
@@ -98,7 +98,7 @@ The `tabulatorToDf` function is crucial for handling data returned from the Tabu
 
 ```r
 observeEvent(input$myTable_data_changed, {
-  changed_data <- tabulatorToDf(input$myTable_data_changed)
+  changed_data <- tabulator_to_df(input$myTable_data_changed)
   # Now 'changed_data' is a regular R data frame
   print(str(changed_data))
 })
