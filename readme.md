@@ -4,6 +4,7 @@
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Test](https://github.com/fxi/amtabulator/actions/workflows/tests.yml/badge.svg)](https://github.com/fxi/amtabulator/actions/workflows/tests.yml)
 
 A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny. This package provides an HTMLWidget wrapper around Tabulator.js with enhanced selection capabilities and modern JavaScript tooling.
 

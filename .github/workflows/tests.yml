@@ -1,4 +1,4 @@
-name: Test
+name: R-CMD-check
 
 on:
   push:
@@ -7,37 +7,41 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  check:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
     steps:
       - uses: actions/checkout@v4
 
+      # Node.js setup and build (must be first as R package depends on built JS)
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
           cache: 'npm'
 
-      - name: Setup R
-        uses: r-lib/actions/setup-r@v2
+      - name: Install and build JavaScript
+        run: |
+          npm ci
+          npm run test:ci
+          npm run build
+
+      # R setup and check
+      - uses: r-lib/actions/setup-r@v2
         with:
-          r-version: 'release'
+          use-public-rspm: true
 
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+      - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          packages: |
-            any::testthat
-            any::devtools
-            any::htmlwidgets
-            any::jsonlite
-            any::pkgdown
+          extra-packages: |
+            local::.
+            any::rcmdcheck
+          needs: check
 
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Run JavaScript tests
-        run: npm run test:js
-
-      - name: Run R tests
-        run: npm run test:r
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          error-on: '"error"'
+          check-dir: "check"
