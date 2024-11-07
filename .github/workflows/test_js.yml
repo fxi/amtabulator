@@ -8,23 +8,25 @@ on:
 
 jobs:
   test:
+    name: Run tests and collect coverage
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
-          node-version: '16.x'
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+
       - name: Install dependencies
         run: npm install
-      - name: Run tests with coverage
+
+      - name: Run tests
         run: npm run test:ci
-      - name: Upload coverage to Codecov
+
+      - name: Upload results to Codecov
         uses: codecov/codecov-action@v4
         with:
-          files: ./coverage/coverage-final.json
-          flags: unittests
-          name: codecov-umbrella
-          fail_ci_if_error: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          slug: fxi/amtabulator
