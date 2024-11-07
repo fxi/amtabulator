@@ -5,11 +5,12 @@
 ^renv\.lock$
 ^\.Renviron$
 
+
+
+
 # Documentation and development
 ^README\.Rmd$
 ^README\.md$
-^LICENSE\.md$
-^LICENSE$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
@@ -36,3 +37,9 @@
 # Development directories
 ^demo$
 ^inst/htmlwidgets/src$
+
+# Docker
+.dockerignore
+
+# Make
+makefile

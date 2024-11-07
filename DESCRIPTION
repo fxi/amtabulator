@@ -1,16 +1,18 @@
 Package: amtabulator
 Title: Tabulator.js Integration in Shiny
-Version: 0.1.0
-Authors@R: person("Fred", "Moser", email = "frederic.moser@unige.ch", role = c("aut", "cre"))
-Description: Integrates Tabulator.js library in Shiny. It's a generic wrapper built and tested with modern JavaScript tools. focus on AccessMod requirerments– 'am' in amtabulator – with a custom selection module. For another, more complete integration in R/Shiny, see `eoda-dev/rtabulator`.
+Version: 0.0.1
+Date: 2024-09-14
+Authors@R: c(person("Fred", "Moser", email = "spam.frederic.moser@unige.ch", role = c("aut", "cre")))
+Maintainer: Fred Moser <spam.frederic.moser@unige.ch>
+Author: Fred Moser <spam.frederic.moser@unige.ch>
+Description: Integrates Tabulator.js library in Shiny. It's a generic wrapper built 
+    and tested with modern JavaScript tools. focus on AccessMod requirerments-- 'am' 
+    in amtabulator -- with a custom selection module. For another, more complete 
+    integration in R/Shiny, see 'eoda-dev/rtabulator'.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
-Imports:
-    shiny,
-    htmlwidgets,
-    jsonlite
-Suggests:
-    testthat (>= 3.0.0)
+Imports: shiny, htmlwidgets, jsonlite, htmltools
+Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2

@@ -1,3 +1,8 @@
+#' @import htmlwidgets
+#' @importFrom shiny getDefaultReactiveDomain
+#' @importFrom jsonlite fromJSON
+NULL
+
 #' Create a Tabulator widget
 #'
 #' @param data A data frame or matrix
@@ -148,7 +153,7 @@ tabulator <- function(
   )
 
   # Merge user options with defaults
-  options <- modifyList(default_options, options)
+  options <- utils::modifyList(default_options, options)
 
   # Prepare dependencies
   deps <- htmlwidgets::getDependency("amtabulator", "amtabulator")
@@ -197,8 +202,8 @@ tabulator_to_df <- function(message) {
 #' Create a Tabulator output element
 #'
 #' @param outputId The ID of the output element
-#' @param width The width of the element (default: '100%')
-#' @param height The height of the element (default: '400px')
+#' @param width The width of the element
+#' @param height The height of the element
 #'
 #' @export
 #' @importFrom htmlwidgets shinyWidgetOutput

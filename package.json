@@ -1,13 +1,14 @@
 {
   "name": "amtabulator",
-  "version": "0.1.0",
+  "version": "0.0.2",
   "description": "Tabulator wrapper for R/Shiny HTMLWidget",
   "type": "module",
   "scripts": {
     "dev": "vite build --watch",
-    "build": "vite build",
-    "test": "vitest",
-    "test:debug": "vitest  --ui"
+    "test": "vitest watch",
+    "test:ci": "vitest run",
+    "test:debug": "vitest --ui",
+    "build": "vite build"
   },
   "dependencies": {
     "tabulator-tables": "^6.2.5"

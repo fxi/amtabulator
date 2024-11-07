@@ -9,9 +9,9 @@ tabulator_output(outputId, width = "100\%", height = "400px")
 \arguments{
 \item{outputId}{The ID of the output element}
 
-\item{width}{The width of the element (default: '100%')}
+\item{width}{The width of the element}
 
-\item{height}{The height of the element (default: '400px')}
+\item{height}{The height of the element}
 }
 \description{
 Create a Tabulator output element

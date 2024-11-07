@@ -1,8 +1,11 @@
 # amtabulator
 
+> ⚠️ Early version. Focused on [AccessMod](https://github.com/unige-geohealth/accessmod) requirements. Check [rtabulator](https://github.com/eoda-dev/rtabulator) for a more versatile package.
+
+
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny, focused on AccessMod requirements. This package provides an HTMLWidget wrapper around Tabulator.js with enhanced selection capabilities and modern JavaScript tooling.
+A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny. This package provides an HTMLWidget wrapper around Tabulator.js with enhanced selection capabilities and modern JavaScript tooling.
 
 ## Features
 
@@ -16,7 +19,7 @@ A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny, fo
 
 ```r
 # Install from GitHub
-remotes::install_github("fxi/amtabulator")
+pak::pkg_install("fxi/amtabulator")
 ```
 
 ## Usage
@@ -103,39 +106,32 @@ amtabulator/
 ## Development
 
 ```bash
-# Install npm dependencies
+# Install dependencies
 npm ci
 
-# Run development build with watch
-npm run dev
+# Development
+npm run dev      # Watch mode
+npm run test     # Run all tests
+npm run build    # Production build
 
-# Run tests
-npm test
-
-# Build for production
-npm run build
+# R commands
+make all 
+make document
+make test
+make build
 ```
 
-## Testing
+## License
 
-The package includes comprehensive tests for both R and JavaScript components:
+MIT License - see [LICENSE](LICENSE) file
 
-```r
-# Run R tests
-devtools::test()
+## See Also
 
-# Run JavaScript tests
-npm test
-```
+This package focuses on AccessMod requirements with emphasis on selection functionality. For a more complete Tabulator.js integration, see [rtabulator](https://github.com/eoda-dev/rtabulator).
+
 
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## See Also
-
-For a more complete Tabulator.js integration in R/Shiny, see [rtabulator](https://github.com/eoda-dev/rtabulator). This package focuses specifically on AccessMod requirements with emphasis on selection functionality and state persistence.
