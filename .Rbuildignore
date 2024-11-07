@@ -6,11 +6,7 @@
 ^\.Renviron$
 
 
-
-
 # Documentation and development
-^README\.Rmd$
-^README\.md$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
