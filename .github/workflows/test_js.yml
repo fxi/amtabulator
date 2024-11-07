@@ -1,0 +1,39 @@
+name: amtabulator-js
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      R_KEEP_PKG_SOURCE: yes
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # Node.js setup and build (must be first as R package depends on built JS)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install
+        run: npm ci
+
+      - name: Run Unit Tests
+        run: npm run test:ci
+
+      - name: Publish Results Badge
+        uses: wjervis7/vitest-badge-action@v1.0.0
+        if: success() || failure() # run whether steps succeed or not
+        with:
+          result-type: lines
+          gist-token: ${{ secrets.GIST_TOKEN }} # if you want to upload badge to gist
+          gist-url: https://gist.github.com/{org/user}/{gist_id}
+          upload-badge: ${{ github.base_ref == 'refs/heads/main' }}
