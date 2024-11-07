@@ -4,7 +4,12 @@
 
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Test](https://github.com/fxi/amtabulator/actions/workflows/tests.yml/badge.svg)](https://github.com/fxi/amtabulator/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/fxi/amtabulator/graph/badge.svg?token=C17WBKIA84)](https://codecov.io/gh/fxi/amtabulator)
+[![Build Status](https://github.com/fxi/amtabulator/actions/workflows/js_test_coverage.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
+[![Build Status](https://github.com/fxi/amtabulator/actions/workflows/r_check.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
+[![Build Status](https://github.com/fxi/amtabulator/actions/workflows/r_pkgdown.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
+[![Build Status](https://github.com/fxi/amtabulator/actions/workflows/r_test_coverage.yaml/badge.svg?branch=main)](https://github.com/fxi/amtabulator/)
+
 
 A lightweight [Tabulator.js](http://tabulator.info/) integration for R/Shiny. This package provides an HTMLWidget wrapper around Tabulator.js with enhanced selection capabilities and modern JavaScript tooling.
 

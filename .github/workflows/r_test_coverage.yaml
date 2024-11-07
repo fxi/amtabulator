@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [main]
 
-name: test-coverage.yaml
+name: R tests
 
 permissions: read-all
 

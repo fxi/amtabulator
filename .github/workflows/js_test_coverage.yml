@@ -1,4 +1,4 @@
-name: amtabulator-js
+name: Vitest Coverage
 
 on:
   push:
