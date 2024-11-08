@@ -141,4 +141,3 @@ This package focuses on AccessMod requirements with emphasis on selection functi
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-
