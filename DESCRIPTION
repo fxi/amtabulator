@@ -16,3 +16,4 @@ Imports: shiny, htmlwidgets, jsonlite, htmltools
 Suggests: testthat (>= 3.0.0)
 Config/testthat/edition: 3
 RoxygenNote: 7.3.2
+URL: https://fxi.io/amtabulator/

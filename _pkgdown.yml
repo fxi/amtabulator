@@ -1,0 +1,5 @@
+# Generated with usethis::use_pkgdown_github_pages()
+url: https://fxi.io/amtabulator/
+template:
+  bootstrap: 5
+
