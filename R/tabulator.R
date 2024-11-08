@@ -42,6 +42,7 @@ tabulator <- function(
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
 
+  browser()
 
   if (is.null(columnHeaders)) {
     columnHeaders <- colNames
@@ -161,7 +162,7 @@ tabulator <- function(
   if (!is.null(css)) {
     deps <- c(deps, htmltools::htmlDependency(
       name = "amtabulator-css",
-      version = "0.1.0",
+      version = "0.0.1",
       src = dirname(css),
       stylesheet = basename(css)
     ))
