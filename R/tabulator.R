@@ -42,8 +42,6 @@ tabulator <- function(
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
 
-  browser()
-
   if (is.null(columnHeaders)) {
     columnHeaders <- colNames
   }
