@@ -2,6 +2,8 @@
 #' @importFrom shiny getDefaultReactiveDomain
 #' @importFrom jsonlite fromJSON
 
+NULL
+
 #' Create a Tabulator widget
 #'
 #' @param data A data frame or matrix
@@ -378,6 +380,14 @@ tabulator_add_rows <- function(proxy, data, position = "bottom") {
 
   if (length(data) == 0) {
     stop("Data must contain at least one row")
+  }
+
+  # Check for mismatched column lengths
+  if (is.list(data) || is.data.frame(data)) {
+    lengths <- sapply(data, length)
+    if (length(unique(lengths)) > 1) {
+      stop("All columns in data must have the same length")
+    }
   }
 
   proxy$session$sendCustomMessage(

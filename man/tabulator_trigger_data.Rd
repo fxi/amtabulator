@@ -2,7 +2,7 @@
 % Please edit documentation in R/tabulator.R
 \name{tabulator_trigger_data}
 \alias{tabulator_trigger_data}
-\title{Trigger data input ( refresh )}
+\title{Trigger data input (refresh)}
 \usage{
 tabulator_trigger_data(proxy)
 }
@@ -10,5 +10,5 @@ tabulator_trigger_data(proxy)
 \item{proxy}{A Tabulator proxy object}
 }
 \description{
-Trigger data input ( refresh )
+Trigger data input (refresh)
 }

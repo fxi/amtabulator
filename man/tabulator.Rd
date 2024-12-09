@@ -18,7 +18,8 @@ tabulator(
   add_selector_bar = FALSE,
   add_select_column = FALSE,
   return_select_column = FALSE,
-  return_select_column_name = "row_select"
+  return_select_column_name = "row_select",
+  columnOrder = NULL
 )
 }
 \arguments{
@@ -49,6 +50,8 @@ tabulator(
 \item{return_select_column}{Boolean to include selection status in returned data (default: FALSE)}
 
 \item{return_select_column_name}{Name for the returned selection column (default: "row_select")}
+
+\item{columnOrder}{A character vector specifying the desired column order (default: NULL)}
 }
 \description{
 Create a Tabulator widget
