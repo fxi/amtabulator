@@ -1,5 +1,9 @@
 library(shiny)
-library(amtabulator)
+# library(amtabulator)
+
+
+devtools::load_all("./")
+
 
 # Prepare the iris dataset
 iris_data <- iris
@@ -7,6 +11,7 @@ names(iris_data) <- gsub("\\.", "_", tolower(names(iris_data)))
 iris_data$large <- iris_data$petal_width > 1
 iris_data$cat <- seq_len(nrow(iris_data))
 iris_data <- iris_data[, c("cat", setdiff(names(iris_data), "cat"))]
+iris_data$hidden <- "a"
 
 ui <- fluidPage(
   titlePanel("Iris Dataset Tabulator Demo with Event Listeners"),
@@ -43,6 +48,7 @@ server <- function(input, output, session) {
       return_select_column = TRUE,
       readOnly = read_only,
       fixed = "cat",
+      hide = c(8),
       options = list(
         index = "cat"
       )

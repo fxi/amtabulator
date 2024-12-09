@@ -10,8 +10,7 @@ export class TabulatorToolbar {
   }
 
   createToolbar() {
-
-    this._elToolbar.classList.add('tabulator-toolbar');
+    this._elToolbar.classList.add("tabulator-toolbar");
 
     const selectionControls = this.createSelectionControls();
     this._elColSelector = this.createColumnSelector();
@@ -24,7 +23,6 @@ export class TabulatorToolbar {
     this._elToolbar.appendChild(this._elOpSelector);
     this._elToolbar.appendChild(this._elValueInput);
     this._elToolbar.appendChild(actionButtons);
-
 
     this.setupEventListeners();
     this.onColumnChange();
@@ -48,7 +46,8 @@ export class TabulatorToolbar {
     this._table.getColumns().forEach((column) => {
       const label = column.getDefinition().title || column.getField();
       const field = column.getField();
-      if (!label || !field) {
+      const visible = column.isVisible();
+      if (!label || !field || !visible) {
         return;
       }
       selector.appendChild(this.createOption(field, label, selected));

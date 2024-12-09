@@ -17,10 +17,12 @@ describe("TabulatorToolbar", () => {
     {
       getField: () => "name",
       getDefinition: () => ({ title: "Name" }),
+      isVisible: () => true,
     },
     {
       getField: () => "age",
       getDefinition: () => ({ title: "Age" }),
+      isVisible: () => true,
     },
   ];
 
