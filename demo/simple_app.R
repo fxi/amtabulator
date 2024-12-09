@@ -48,7 +48,7 @@ server <- function(input, output, session) {
       return_select_column = TRUE,
       readOnly = read_only,
       fixed = "cat",
-      hide = c(8),
+      hide = "hidden",
       options = list(
         index = "cat"
       )
