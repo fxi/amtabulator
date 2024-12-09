@@ -14,8 +14,7 @@ export class TabulatorWidget {
   init(config, callbacks) {
     const tw = this;
     if (tw.table) {
-      console.warn("Tabulator already initialized");
-      return;
+      tw.destroy();
     }
 
     const { options } = config;
