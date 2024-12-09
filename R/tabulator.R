@@ -18,7 +18,7 @@
 #' @param add_select_column Boolean to add a select column (default: FALSE)
 #' @param return_select_column Boolean to include selection status in returned data (default: FALSE)
 #' @param return_select_column_name Name for the returned selection column (default: "row_select")
-#' @param columnOrder A named list specifying the desired column order (default: NULL)
+#' @param columnOrder A character vector specifying the desired column order (default: NULL)
 #'
 #' @export
 tabulator <- function(
@@ -84,9 +84,16 @@ tabulator <- function(
   # Prepare columns
   # https://tabulator.info/docs/6.3/columns#definition
   columns <- lapply(seq_along(colNames), function(i) {
+    pos <- if (!is.null(columnOrder) && colNames[i] %in% columnOrder) {
+      which(columnOrder == colNames[i])
+    } else {
+      i + length(columnOrder)
+    }
+
     col <- list(
       field = colNames[i],
-      title = columnHeaders[i]
+      title = if (is.null(columnHeaders[i])) colNames[i] else columnHeaders[i],
+      order = pos
     )
 
     # Handle hidden columns
@@ -104,9 +111,9 @@ tabulator <- function(
       if (!is.null(dropDown[[colNames[i]]])) {
         col$editor <- "list"
         col$editorParams <- list(values = dropDown[[colNames[i]]])
-      } else if (is.numeric(df[[i]])) {
+      } else if (is.numeric(df[[colNames[i]]])) {
         col$editor <- "number"
-      } else if (is.logical(df[[i]])) {
+      } else if (is.logical(df[[colNames[i]]])) {
         col$editor <- "tickCross"
       } else {
         col$editor <- "input" # Default editor for other types
@@ -114,56 +121,18 @@ tabulator <- function(
     }
 
     # Set formatter for special cases
-    if (is.logical(df[[i]])) {
+    if (is.logical(df[[colNames[i]]])) {
       col$formatter <- "tickCross"
     }
 
     col
   })
 
-  # Adjust column order based on columnOrder
-  if (!is.null(columnOrder)) {
-    # Convert columnOrder to a named vector if it's a list
-    if (is.list(columnOrder)) {
-      columnOrder <- unlist(columnOrder)
-    }
-
-    # Create a data frame of all columns with their field names and positions
-    columns_df <- data.frame(
-      field = sapply(columns, function(col) col$field),
-      original_position = seq_along(columns),
-      stringsAsFactors = FALSE
-    )
-
-    # Determine which columns are hidden
-    hidden_fields <- columns_df$field[hide]
-
-    # Exclude hidden columns from reordering
-    visible_columns_df <- columns_df[!columns_df$field %in% hidden_fields, ]
-
-    # Add specified positions to visible columns
-    visible_columns_df$specified_position <- columnOrder[visible_columns_df$field]
-
-    # Positions occupied by specified columns
-    specified_positions <- na.omit(visible_columns_df$specified_position)
-
-    # Positions available for unspecified columns
-    total_positions <- seq_len(nrow(visible_columns_df))
-    available_positions <- setdiff(total_positions, specified_positions)
-
-    # Assign positions to unspecified columns in their original order
-    visible_columns_df$final_position <- visible_columns_df$specified_position
-    visible_columns_df$final_position[is.na(visible_columns_df$final_position)] <- available_positions
-
-    # Order visible columns by final_position
-    visible_columns_df <- visible_columns_df[order(visible_columns_df$final_position), ]
-
-    # Combine visible and hidden fields (hidden columns at the end)
-    final_fields <- c(visible_columns_df$field, hidden_fields)
-
-    # Reorder 'columns' list
-    columns <- columns[match(final_fields, sapply(columns, function(col) col$field))]
-  }
+  columns <- columns[order(sapply(columns, function(x) x$order))]
+  columns <- lapply(columns, function(c) {
+    c$order <- NULL
+    c
+  })
 
   # Default options
   default_options <- list(
@@ -185,7 +154,7 @@ tabulator <- function(
     clipboard = TRUE,
     clipboardCopyRowRange = "range",
     clipboardPasteParser = "range",
-    clipboardPasteAction = "range",
+    clipboardPasteAction = "replace",
     clipboardCopyConfig = list(
       rowHeaders = FALSE,
       columnHeaders = FALSE

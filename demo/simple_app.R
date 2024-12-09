@@ -48,19 +48,13 @@ server <- function(input, output, session) {
       return_select_column = TRUE,
       readOnly = read_only,
       fixed = "cat",
-      columnOrder = list(
-        cat = 1,
-        species = 2,
-        large = 3
-      ),
+      columnOrder = c("cat", "species", "large"),
       hide = "hidden",
       options = list(
         index = "cat"
       )
     )
   })
-
-
 
 
   observeEvent(input$updateBtn, {
