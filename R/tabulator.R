@@ -1,7 +1,6 @@
 #' @import htmlwidgets
 #' @importFrom shiny getDefaultReactiveDomain
 #' @importFrom jsonlite fromJSON
-NULL
 
 #' Create a Tabulator widget
 #'
@@ -19,10 +18,9 @@ NULL
 #' @param add_select_column Boolean to add a select column (default: FALSE)
 #' @param return_select_column Boolean to include selection status in returned data (default: FALSE)
 #' @param return_select_column_name Name for the returned selection column (default: "row_select")
-#'
+#' @param columnOrder A named list specifying the desired column order (default: NULL)
 #'
 #' @export
-#' @importFrom htmlwidgets createWidget
 tabulator <- function(
     data,
     options = list(),
@@ -37,7 +35,8 @@ tabulator <- function(
     add_selector_bar = FALSE,
     add_select_column = FALSE,
     return_select_column = FALSE,
-    return_select_column_name = "row_select") {
+    return_select_column_name = "row_select",
+    columnOrder = NULL) {
   # Prepare data and columns
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
@@ -83,6 +82,7 @@ tabulator <- function(
   }
 
   # Prepare columns
+  # https://tabulator.info/docs/6.3/columns#definition
   columns <- lapply(seq_along(colNames), function(i) {
     col <- list(
       field = colNames[i],
@@ -121,9 +121,53 @@ tabulator <- function(
     col
   })
 
+  # Adjust column order based on columnOrder
+  if (!is.null(columnOrder)) {
+    # Convert columnOrder to a named vector if it's a list
+    if (is.list(columnOrder)) {
+      columnOrder <- unlist(columnOrder)
+    }
+
+    # Create a data frame of all columns with their field names and positions
+    columns_df <- data.frame(
+      field = sapply(columns, function(col) col$field),
+      original_position = seq_along(columns),
+      stringsAsFactors = FALSE
+    )
+
+    # Determine which columns are hidden
+    hidden_fields <- columns_df$field[hide]
+
+    # Exclude hidden columns from reordering
+    visible_columns_df <- columns_df[!columns_df$field %in% hidden_fields, ]
+
+    # Add specified positions to visible columns
+    visible_columns_df$specified_position <- columnOrder[visible_columns_df$field]
+
+    # Positions occupied by specified columns
+    specified_positions <- na.omit(visible_columns_df$specified_position)
+
+    # Positions available for unspecified columns
+    total_positions <- seq_len(nrow(visible_columns_df))
+    available_positions <- setdiff(total_positions, specified_positions)
+
+    # Assign positions to unspecified columns in their original order
+    visible_columns_df$final_position <- visible_columns_df$specified_position
+    visible_columns_df$final_position[is.na(visible_columns_df$final_position)] <- available_positions
+
+    # Order visible columns by final_position
+    visible_columns_df <- visible_columns_df[order(visible_columns_df$final_position), ]
+
+    # Combine visible and hidden fields (hidden columns at the end)
+    final_fields <- c(visible_columns_df$field, hidden_fields)
+
+    # Reorder 'columns' list
+    columns <- columns[match(final_fields, sapply(columns, function(col) col$field))]
+  }
+
   # Default options
   default_options <- list(
-    # shiny_tbulator options
+    # shiny_tabulator options
     add_selector_bar = add_selector_bar,
     add_select_column = add_select_column,
     return_select_column = return_select_column,
@@ -176,14 +220,11 @@ tabulator <- function(
   )
 }
 
-
-
 #' Convert raw message to data.frame
 #'
 #' @param message Message from client
 #'
 #' @export
-#' @importFrom htmlwidgets shinyWidgetOutput
 tabulator_to_df <- function(message) {
   if (length(message$data) == 0) {
     return(data.frame())
@@ -194,10 +235,6 @@ tabulator_to_df <- function(message) {
   return(df)
 }
 
-
-
-
-
 #' Create a Tabulator output element
 #'
 #' @param outputId The ID of the output element
@@ -205,7 +242,6 @@ tabulator_to_df <- function(message) {
 #' @param height The height of the element
 #'
 #' @export
-#' @importFrom htmlwidgets shinyWidgetOutput
 tabulator_output <- function(
     outputId,
     width = "100%",
@@ -225,7 +261,6 @@ tabulator_output <- function(
 #' @param quoted Is expr a quoted expression?
 #'
 #' @export
-#' @importFrom htmlwidgets shinyRenderWidget
 render_tabulator <- function(
     expr,
     env = parent.frame(),
@@ -242,7 +277,6 @@ render_tabulator <- function(
 #' @param session The Shiny session object
 #'
 #' @export
-#' @importFrom shiny getDefaultReactiveDomain
 tabulator_proxy <- function(
     input_id,
     session = shiny::getDefaultReactiveDomain()) {
@@ -255,8 +289,7 @@ tabulator_proxy <- function(
   )
 }
 
-
-#' Trigger data input ( refresh )
+#' Trigger data input (refresh)
 #'
 #' @param proxy A Tabulator proxy object
 #'
@@ -273,7 +306,6 @@ tabulator_trigger_data <- function(proxy) {
     )
   )
 }
-
 
 #' Update Tabulator data
 #'
@@ -339,7 +371,6 @@ tabulator_update_where <- function(
     chunk_size = chunk_size
   )
 
-
   proxy$session$sendCustomMessage(
     type = "tabulator_action",
     message = list(
@@ -372,17 +403,11 @@ tabulator_add_rows <- function(proxy, data, position = "bottom") {
     stop("Data cannot be NULL")
   }
 
-  if (!is.list(data) || length(data) == 0) {
-    stop("Data must be a non-empty list or data frame")
+  if (!is.list(data) && !is.data.frame(data)) {
+    stop("Data must be a list or data frame")
   }
 
-  # Check if all elements have the same length
-  lengths <- unique(lengths(data))
-  if (length(lengths) != 1) {
-    stop("All columns in data must have the same length")
-  }
-
-  if (lengths[1] == 0) {
+  if (length(data) == 0) {
     stop("Data must contain at least one row")
   }
 
