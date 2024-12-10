@@ -9,10 +9,10 @@ NULL
 #' @param data A data frame or matrix
 #' @param options A list of Tabulator.js options
 #' @param elementId The ID of the element
-#' @param readOnly A boolean for the whole table, or a vector of column ids or names
+#' @param readOnly A boolean for the whole table, or a vector of column ids or names (no mixing)
 #' @param columnHeaders Custom column headers
-#' @param hide A vector of column ids or names, or a number of columns to hide from left
-#' @param fixedCols A vector of column ids or names, or a number of columns to freeze from left
+#' @param hide A vector of column ids or names to hide
+#' @param fixedCols A vector of column ids or names, columns will be fixed from first to the specified ones
 #' @param stretched Stretching mode for columns (default: "all")
 #' @param dropDown A list of dropdown options for specific columns
 #' @param css Optional path to custom CSS file
@@ -39,6 +39,7 @@ tabulator <- function(
     return_select_column = FALSE,
     return_select_column_name = "row_select",
     columnOrder = NULL) {
+  
   # Prepare data and columns
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
@@ -47,69 +48,86 @@ tabulator <- function(
     columnHeaders <- colNames
   }
 
-  # Helper function to get column indices
+  # Helper function to validate and get column indices
   get_col_indices <- function(cols, all_cols) {
+    if (is.null(cols)) return(integer(0))
+    
     if (is.numeric(cols)) {
+      if (any(cols < 1 | cols > length(all_cols))) {
+        stop("Column indices must be between 1 and ", length(all_cols))
+      }
       return(cols)
     } else if (is.character(cols)) {
-      return(match(cols, all_cols))
-    } else if (is.logical(cols)) {
-      return(which(cols))
+      idx <- match(cols, all_cols)
+      if (any(is.na(idx))) {
+        stop("Column names not found: ", paste(cols[is.na(idx)], collapse = ", "))
+      }
+      return(idx)
+    }
+    stop("Columns must be specified as either indices or names")
+  }
+
+  # Handle readOnly
+  readonly_cols <- rep(FALSE, length(colNames))
+  if (!is.null(readOnly)) {
+    if (is.logical(readOnly)) {
+      if (length(readOnly) == 1) {
+        readonly_cols <- rep(readOnly, length(colNames))
+      } else {
+        stop("If readOnly is logical, it must be a single value")
+      }
     } else {
-      return(integer(0))
+      # Validate no mixing of types
+      if (is.numeric(readOnly) && any(is.character(readOnly)) || 
+          is.character(readOnly) && any(is.numeric(readOnly))) {
+        stop("readOnly must be either all indices or all names, no mixing allowed")
+      }
+      # Get indices and set those columns to readonly
+      idx <- get_col_indices(readOnly, colNames)
+      readonly_cols[idx] <- TRUE
     }
   }
 
-  # Prepare readOnly
-  if (is.logical(readOnly) && length(readOnly) == 1) {
-    readOnly <- rep(readOnly, length(colNames))
-  } else {
-    readOnly_indices <- get_col_indices(readOnly, colNames)
-    readOnly <- rep(FALSE, length(colNames))
-    readOnly[readOnly_indices] <- TRUE
+  # Handle hide
+  hidden_cols <- integer(0)
+  if (!is.null(hide)) {
+    hidden_cols <- get_col_indices(hide, colNames)
   }
 
-  # Prepare hide
-  if (is.numeric(hide) && length(hide) == 1) {
-    hide <- seq_len(hide)
-  } else {
-    hide <- get_col_indices(hide, colNames)
+  # Handle fixedCols
+  fixed_cols <- integer(0)
+  if (!is.null(fixedCols)) {
+    idx <- get_col_indices(fixedCols, colNames)
+    fixed_cols <- seq_len(max(idx))
   }
 
-  # Prepare fixedCols
-  if (is.numeric(fixedCols) && length(fixedCols) == 1) {
-    fixedCols <- seq_len(fixedCols)
-  } else {
-    fixedCols <- get_col_indices(fixedCols, colNames)
+  # Handle columnOrder
+  final_order <- seq_along(colNames)
+  if (!is.null(columnOrder)) {
+    ordered_idx <- get_col_indices(columnOrder, colNames)
+    remaining_idx <- setdiff(final_order, ordered_idx)
+    final_order <- c(ordered_idx, remaining_idx)
   }
 
-  # Prepare columns
-  # https://tabulator.info/docs/6.3/columns#definition
-  columns <- lapply(seq_along(colNames), function(i) {
-    pos <- if (!is.null(columnOrder) && colNames[i] %in% columnOrder) {
-      which(columnOrder == colNames[i])
-    } else {
-      i + length(columnOrder)
-    }
-
+  # Prepare columns configuration
+  columns <- lapply(final_order, function(i) {
     col <- list(
       field = colNames[i],
-      title = if (is.null(columnHeaders[i])) colNames[i] else columnHeaders[i],
-      order = pos
+      title = columnHeaders[i]
     )
 
-    # Handle hidden columns
-    if (i %in% hide) {
+    # Handle visibility
+    if (i %in% hidden_cols) {
       col$visible <- FALSE
     }
 
     # Handle frozen columns
-    if (i %in% fixedCols) {
+    if (i %in% fixed_cols) {
       col$frozen <- TRUE
     }
 
     # Set editor and formatter based on column type
-    if (!isTRUE(readOnly[i])) {
+    if (!readonly_cols[i]) {
       if (!is.null(dropDown[[colNames[i]]])) {
         col$editor <- "list"
         col$editorParams <- list(values = dropDown[[colNames[i]]])
@@ -118,7 +136,7 @@ tabulator <- function(
       } else if (is.logical(df[[colNames[i]]])) {
         col$editor <- "tickCross"
       } else {
-        col$editor <- "input" # Default editor for other types
+        col$editor <- "input"
       }
     }
 
@@ -130,12 +148,6 @@ tabulator <- function(
     col
   })
 
-  columns <- columns[order(sapply(columns, function(x) x$order))]
-  columns <- lapply(columns, function(c) {
-    c$order <- NULL
-    c
-  })
-
   # Default options
   default_options <- list(
     # shiny_tabulator options
@@ -143,6 +155,7 @@ tabulator <- function(
     add_select_column = add_select_column,
     return_select_column = return_select_column,
     return_select_column_name = return_select_column_name,
+    freeze_selected = TRUE, 
     # tabulator options
     columns = columns,
     index = NULL,

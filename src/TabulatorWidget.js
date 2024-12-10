@@ -58,6 +58,24 @@ export class TabulatorWidget {
           toolsBar.createToolbar();
         }
       });
+      /**
+       * Freeze row
+       */
+      if (options.freeze_selected) {
+        tw.table.on(
+          "rowSelectionChanged",
+          function (data, rows, selected, deselected) {
+            tw.table.blockRedraw();
+            for (const row of selected) {
+              row.freeze();
+            }
+            for (const row of deselected) {
+              row.unfreeze();
+            }
+            tw.table.restoreRedraw();
+          }
+        );
+      }
     } catch (error) {
       console.error("Error creating Tabulator instance:", error);
     }

@@ -36,8 +36,8 @@ ui <- fluidPage(
 server <- function(input, output, session) {
   # Initialize data
   react_iris_data <- reactiveVal(iris_data)
-
-  read_only <- !(names(iris_data) %in% "species")
+  col_names <- names(iris_data)
+  read_only <- col_names[!(col_names %in% "species")]
 
   output$iris_table <- render_tabulator({
     tabulator(
