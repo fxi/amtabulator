@@ -77,13 +77,25 @@ tabulator <- function(
         stop("If readOnly is logical, it must be a single value")
       }
     } else {
-      # Validate no mixing of types
-      if (is.numeric(readOnly) && any(is.character(readOnly)) || 
-          is.character(readOnly) && any(is.numeric(readOnly))) {
+      # Validate types before any operations
+      if (length(readOnly) == 0) {
+        stop("readOnly cannot be empty")
+      }
+      
+      # Check for mixed types
+      has_numeric <- any(sapply(readOnly, function(x) is.numeric(x) || (is.character(x) && grepl("^[0-9]+$", x))))
+      has_character <- any(sapply(readOnly, function(x) is.character(x) && !grepl("^[0-9]+$", x)))
+      
+      if (has_numeric && has_character) {
         stop("readOnly must be either all indices or all names, no mixing allowed")
       }
-      # Get indices and set those columns to readonly
-      idx <- get_col_indices(readOnly, colNames)
+      
+      # Now we can safely get indices
+      if (has_numeric) {
+        idx <- get_col_indices(as.numeric(readOnly), colNames)
+      } else {
+        idx <- get_col_indices(readOnly, colNames)
+      }
       readonly_cols[idx] <- TRUE
     }
   }
@@ -124,6 +136,8 @@ tabulator <- function(
     # Handle frozen columns
     if (i %in% fixed_cols) {
       col$frozen <- TRUE
+    } else {
+      col$frozen <- FALSE  # Explicitly set to FALSE when not frozen
     }
 
     # Set editor and formatter based on column type
@@ -155,7 +169,6 @@ tabulator <- function(
     add_select_column = add_select_column,
     return_select_column = return_select_column,
     return_select_column_name = return_select_column_name,
-    freeze_selected = TRUE, 
     # tabulator options
     columns = columns,
     index = NULL,

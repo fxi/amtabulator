@@ -3,7 +3,6 @@ library(amtabulator)
 library(shiny)
 library(htmlwidgets)
 
-
 # Test basic widget creation
 test_that("tabulator function creates a widget", {
   widget <- tabulator(data = mtcars)
@@ -22,17 +21,178 @@ test_that("tabulator widget handles options correctly", {
   expect_true(widget$x$options$movableColumns)
 })
 
-# Test column configuration
-test_that("tabulator handles column configurations correctly", {
-  # Test hiding columns
-  widget <- tabulator(data = mtcars, hide = c("mpg", "cyl"))
-  hidden_cols <- sapply(widget$x$options$columns, function(x) isFALSE(x$visible))
-  expect_true(sum(hidden_cols) >= 2)
+# Test readOnly parameter
+test_that("tabulator handles readOnly parameter correctly", {
+  df <- data.frame(
+    cat = c("A", "B"),
+    ph = c(7.0, 7.5),
+    turbid = c(0.5, 0.7),
+    caco3 = c(10, 15)
+  )
+  
+  # Test boolean TRUE for all columns
+  widget <- tabulator(df, readOnly = TRUE)
+  expect_true(all(sapply(widget$x$options$columns, function(col) is.null(col$editor))))
+  
+  # Test boolean FALSE for all columns
+  widget <- tabulator(df, readOnly = FALSE)
+  expect_true(all(sapply(widget$x$options$columns, function(col) !is.null(col$editor))))
+  
+  # Test column indices
+  widget <- tabulator(df, readOnly = c(1, 3))
+  cols <- widget$x$options$columns
+  expect_null(cols[[1]]$editor)
+  expect_false(is.null(cols[[2]]$editor))
+  expect_null(cols[[3]]$editor)
+  expect_false(is.null(cols[[4]]$editor))
+  
+  # Test column names
+  widget <- tabulator(df, readOnly = c("cat", "turbid"))
+  cols <- widget$x$options$columns
+  expect_null(cols[[1]]$editor)
+  expect_false(is.null(cols[[2]]$editor))
+  expect_null(cols[[3]]$editor)
+  expect_false(is.null(cols[[4]]$editor))
+  
+  # Test error on mixing types
+  expect_error(
+    tabulator(df, readOnly = c(1, "cat")),
+    "readOnly must be either all indices or all names, no mixing allowed"
+  )
+  
+  # Test error on invalid column names
+  expect_error(
+    tabulator(df, readOnly = c("invalid", "column")),
+    "Column names not found"
+  )
+  
+  # Test error on invalid column indices
+  expect_error(
+    tabulator(df, readOnly = c(0, 5)),
+    "Column indices must be between 1 and"
+  )
+})
 
-  # Test fixed columns
-  widget <- tabulator(data = mtcars, fixedCols = c("mpg"))
-  fixed_cols <- sapply(widget$x$options$columns, function(x) isTRUE(x$frozen))
-  expect_true(sum(fixed_cols) >= 1)
+# Test fixedCols parameter
+test_that("tabulator handles fixedCols parameter correctly", {
+  df <- data.frame(
+    cat = c("A", "B"),
+    ph = c(7.0, 7.5),
+    turbid = c(0.5, 0.7),
+    caco3 = c(10, 15)
+  )
+  
+  # Test NULL
+  widget <- tabulator(df, fixedCols = NULL)
+  cols <- widget$x$options$columns
+  expect_true(all(sapply(cols, function(col) isFALSE(col$frozen))))
+  
+  # Test column indices
+  widget <- tabulator(df, fixedCols = 3)
+  cols <- widget$x$options$columns
+  expect_true(cols[[1]]$frozen)
+  expect_true(cols[[2]]$frozen)
+  expect_true(cols[[3]]$frozen)
+  expect_false(cols[[4]]$frozen)
+  
+  # Test column names
+  widget <- tabulator(df, fixedCols = "turbid")
+  cols <- widget$x$options$columns
+  expect_true(cols[[1]]$frozen)
+  expect_true(cols[[2]]$frozen)
+  expect_true(cols[[3]]$frozen)
+  expect_false(cols[[4]]$frozen)
+  
+  # Test error on invalid column names
+  expect_error(
+    tabulator(df, fixedCols = "invalid"),
+    "Column names not found"
+  )
+  
+  # Test error on invalid column indices
+  expect_error(
+    tabulator(df, fixedCols = 5),
+    "Column indices must be between 1 and"
+  )
+})
+
+# Test hide parameter
+test_that("tabulator handles hide parameter correctly", {
+  df <- data.frame(
+    cat = c("A", "B"),
+    ph = c(7.0, 7.5),
+    turbid = c(0.5, 0.7),
+    caco3 = c(10, 15)
+  )
+  
+  # Test NULL
+  widget <- tabulator(df, hide = NULL)
+  expect_true(all(sapply(widget$x$options$columns, function(col) is.null(col$visible) || col$visible)))
+  
+  # Test column indices
+  widget <- tabulator(df, hide = c(1, 3))
+  cols <- widget$x$options$columns
+  expect_false(cols[[1]]$visible)
+  expect_true(is.null(cols[[2]]$visible) || cols[[2]]$visible)
+  expect_false(cols[[3]]$visible)
+  expect_true(is.null(cols[[4]]$visible) || cols[[4]]$visible)
+  
+  # Test column names
+  widget <- tabulator(df, hide = c("cat", "turbid"))
+  cols <- widget$x$options$columns
+  expect_false(cols[[1]]$visible)
+  expect_true(is.null(cols[[2]]$visible) || cols[[2]]$visible)
+  expect_false(cols[[3]]$visible)
+  expect_true(is.null(cols[[4]]$visible) || cols[[4]]$visible)
+  
+  # Test error on invalid column names
+  expect_error(
+    tabulator(df, hide = "invalid"),
+    "Column names not found"
+  )
+  
+  # Test error on invalid column indices
+  expect_error(
+    tabulator(df, hide = 5),
+    "Column indices must be between 1 and"
+  )
+})
+
+# Test columnOrder parameter
+test_that("tabulator handles columnOrder parameter correctly", {
+  df <- data.frame(
+    cat = c("A", "B"),
+    ph = c(7.0, 7.5),
+    turbid = c(0.5, 0.7),
+    caco3 = c(10, 15)
+  )
+  
+  # Test NULL
+  widget <- tabulator(df, columnOrder = NULL)
+  cols <- widget$x$options$columns
+  expect_equal(sapply(cols, function(col) col$field), c("cat", "ph", "turbid", "caco3"))
+  
+  # Test specific order with column names
+  widget <- tabulator(df, columnOrder = c("cat", "caco3"))
+  cols <- widget$x$options$columns
+  expect_equal(sapply(cols, function(col) col$field), c("cat", "caco3", "ph", "turbid"))
+  
+  # Test specific order with column indices
+  widget <- tabulator(df, columnOrder = c(1, 4))
+  cols <- widget$x$options$columns
+  expect_equal(sapply(cols, function(col) col$field), c("cat", "caco3", "ph", "turbid"))
+  
+  # Test error on invalid column names
+  expect_error(
+    tabulator(df, columnOrder = c("invalid", "column")),
+    "Column names not found"
+  )
+  
+  # Test error on invalid column indices
+  expect_error(
+    tabulator(df, columnOrder = c(0, 5)),
+    "Column indices must be between 1 and"
+  )
 })
 
 test_that("tabulator_output function creates a shiny output", {
