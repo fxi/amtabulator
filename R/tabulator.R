@@ -198,7 +198,6 @@ tabulator <- function(
 
   # Merge user options with defaults
   options <- utils::modifyList(default_options, options)
-  browser()
 
   # Prepare dependencies
   deps <- htmlwidgets::getDependency("amtabulator", "amtabulator")

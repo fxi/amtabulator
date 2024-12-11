@@ -1,4 +1,3 @@
-import "./style.css";
 
 export class TabulatorToolbar {
   constructor(table, elTarget) {

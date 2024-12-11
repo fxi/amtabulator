@@ -24,7 +24,8 @@
   flex-grow: 1;
   overflow: auto;
   background-color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
 }
 
 .tabulator-toolbar select,
@@ -58,24 +59,23 @@
 /* Table Row and Cell Styling */
 .tabulator-row {
   border-bottom: 1px solid #eee;
-  min-height: 22px;
+  min-height: 20px;
+  margin-bottom: 0px;
 }
 
 .tabulator-row:hover {
   background-color: rgba(0, 0, 0, 0.02);
 }
-
+.tabulator-row .tabulator-cell {
+  border-left: none !important;
+  border-right: 1px solid #eee !important;
+}
 .tabulator-row .tabulator-cell {
   padding: 3px 6px;
-  border-right: 1px solid #eee;
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.tabulator-row .tabulator-cell:last-child {
-  border-right: none;
 }
 
 .tabulator-row .tabulator-cell.tabulator-frozen {
@@ -84,16 +84,18 @@
 }
 
 /* Alternate Row Colors */
-.tabulator-row:nth-child(even) {
-  background-color: #fafafa;
-}
 
 /* Header Styling */
-.tabulator-header {
-  border-bottom: none;
-  background-color: #f8f8f8;
-}
 
+.tabulator .tabulator-header {
+  border-bottom: 1px solid #eee;
+  font-size: 1.1em;
+  margin-bottom: 0px;
+  padding-left: 0px;
+}
+.tabulator .tabulator-header .tabulator-col:first-child {
+  padding-left: 0px;
+}
 .tabulator-header,
 .tabulator-headers,
 .tabulator-col {
@@ -153,7 +155,6 @@
   margin-right: 0px;
   background: #ddd;
 }
-
 
 .tabulator-frozen {
   border-right: 1px solid #ddd !important;

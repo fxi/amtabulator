@@ -46,7 +46,7 @@ HTMLWidgets.widget({
     ];
 
     return {
-      renderValue: (config) => widget.init(config, callbacks),
+      renderValue: async (config) => await widget.init(config, callbacks),
       resize: (width, height) => widget.resize(width, height),
       getTable: () => widget.getTable(),
       instance: widget,

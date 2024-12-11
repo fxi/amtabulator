@@ -1,7 +1,6 @@
-import "tabulator-tables/dist/css/tabulator_bootstrap4.css";
-
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { TabulatorToolbar } from "./TabulatorToolbar.js";
+import { styleManager } from './styleManager';
 
 export class TabulatorWidget {
   constructor(el, callbacks) {
@@ -9,9 +8,10 @@ export class TabulatorWidget {
     this.table = null;
     this.callbacks = callbacks;
     this._options = {};
+    this.currentTheme = null;
   }
 
-  init(config, callbacks) {
+  async init(config, callbacks) {
     const tw = this;
     if (tw.table) {
       tw.destroy();
@@ -19,6 +19,15 @@ export class TabulatorWidget {
 
     const { options } = config;
     const { data } = options;
+
+    // Load theme before initializing table
+    const themeName = options.theme_id || 'bootstrap4';
+    const compact = options.compact !== undefined ? options.compact : true;
+    
+    if (this.currentTheme !== themeName) {
+      await styleManager.loadTheme(themeName, compact);
+      this.currentTheme = themeName;
+    }
 
     tw._options = options;
     try {
@@ -101,14 +110,10 @@ export class TabulatorWidget {
   debounce(func, timeout = 300) {
     let timer;
     return (...args) => {
-      // Clear any existing timer
       if (timer) {
         clearTimeout(timer);
       }
-
-      // Create a new timer
       timer = setTimeout(() => {
-        // Apply the function with the correct context (this) and arguments
         func.apply(this, args);
       }, timeout);
     };
@@ -235,7 +240,6 @@ export class TabulatorWidget {
         return;
       }
 
-      // Allow browser to remain responsive between chunks
       await new Promise((resolve) => setTimeout(resolve, 0));
     }
 
@@ -255,6 +259,7 @@ export class TabulatorWidget {
       Object.fromEntries(keys.map((key) => [key, objOfArrays[key][i]]))
     );
   }
+
   async addRows(data, position = "bottom") {
     if (!this.table) {
       console.error("Table instance not found");
@@ -265,7 +270,6 @@ export class TabulatorWidget {
       const formattedData = this.formatTable(data, true);
       await this.table.addData(formattedData, position === "top");
 
-      // Trigger a data update event
       const updatedData = await this.table.getData();
       this.table.setData(updatedData);
     } catch (error) {
@@ -284,15 +288,12 @@ export class TabulatorWidget {
         rowIds = [rowIds];
       }
 
-      // Get all matching rows
       const rows = rowIds
         .map((id) => this.table.getRow(id))
         .filter((row) => row);
 
-      // Delete the rows
       rows.forEach((row) => row.delete());
 
-      // Trigger a data update event
       const updatedData = await this.table.getData();
       this.table.setData(updatedData);
     } catch (error) {
@@ -311,7 +312,6 @@ export class TabulatorWidget {
       if (firstRow) {
         firstRow.delete();
 
-        // Trigger a data update event
         const updatedData = await this.table.getData();
         this.table.setData(updatedData);
       }
@@ -332,7 +332,6 @@ export class TabulatorWidget {
       if (lastRow) {
         lastRow.delete();
 
-        // Trigger a data update event
         const updatedData = await this.table.getData();
         this.table.setData(updatedData);
       }
