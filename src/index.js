@@ -5,7 +5,9 @@ HTMLWidgets.widget({
   type: "output",
   renderOnNullValue: true,
   factory: function (el) {
-    const widget = new TabulatorWidget(el);
+    const elTable = document.createElement('div');
+    el.appendChild(elTable);
+    const widget = new TabulatorWidget(elTable);
 
     const callbacks = [
       [
@@ -15,7 +17,7 @@ HTMLWidgets.widget({
            * also updating input when selection change
            * - checkbox selection change the data
            *   when 'return_select_column' is true
-           * - requesting data update with 'trigger_data' requires another step 
+           * - requesting data update with 'trigger_data' requires another step
            */
           Shiny.setInputValue(`${el.id}_data`, {
             data: JSON.stringify(widget.getData()),

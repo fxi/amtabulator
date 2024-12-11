@@ -28,7 +28,7 @@ ui <- fluidPage(
       verbatimTextOutput("submitSummary")
     ),
     mainPanel(
-      tabulator_output("iris_table")
+      tabulator_output("iris_table", height = "400px")
     )
   )
 )

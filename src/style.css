@@ -63,8 +63,12 @@
   margin-bottom: 0px;
 }
 
+.tabulator-row:nth-child(2n) {
+  background-color: #eee;
+}
+
 .tabulator-row:hover {
-  background-color: rgba(0, 0, 0, 0.02);
+  background-color: #eee;
 }
 .tabulator-row .tabulator-cell {
   border-left: none !important;
@@ -88,7 +92,7 @@
 /* Header Styling */
 
 .tabulator .tabulator-header {
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid #999;
   font-size: 1.1em;
   margin-bottom: 0px;
   padding-left: 0px;

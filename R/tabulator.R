@@ -21,6 +21,7 @@ NULL
 #' @param return_select_column Boolean to include selection status in returned data (default: FALSE)
 #' @param return_select_column_name Name for the returned selection column (default: "row_select")
 #' @param columnOrder A character vector specifying the desired column order (default: NULL)
+#' @param columns Manual columns setting. If empty, use auto + columnOrder
 #'
 #' @export
 tabulator <- function(
@@ -38,7 +39,8 @@ tabulator <- function(
     add_select_column = FALSE,
     return_select_column = FALSE,
     return_select_column_name = "row_select",
-    columnOrder = NULL) {
+    columnOrder = NULL,
+    columns = NULL) {
   # Prepare data and columns
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
@@ -47,6 +49,7 @@ tabulator <- function(
     columnHeaders <- colNames
   }
 
+ 
   # Helper function to validate and get column indices
   get_col_indices <- function(cols, all_cols) {
     if (is.null(cols)) {
@@ -173,7 +176,7 @@ tabulator <- function(
     # tabulator options
     columns = columns,
     index = NULL,
-    height = "600px",
+    height = "100%", # 100%=use container size
     data = df,
     tooltips = TRUE,
     addRowPos = "top",
