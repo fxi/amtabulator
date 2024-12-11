@@ -19,7 +19,8 @@ tabulator(
   add_select_column = FALSE,
   return_select_column = FALSE,
   return_select_column_name = "row_select",
-  columnOrder = NULL
+  columnOrder = NULL,
+  columns = NULL
 )
 }
 \arguments{
@@ -29,13 +30,13 @@ tabulator(
 
 \item{elementId}{The ID of the element}
 
-\item{readOnly}{A boolean for the whole table, or a vector of column ids or names}
+\item{readOnly}{A boolean for the whole table, or a vector of column ids or names (no mixing)}
 
 \item{columnHeaders}{Custom column headers}
 
-\item{hide}{A vector of column ids or names, or a number of columns to hide from left}
+\item{hide}{A vector of column ids or names to hide}
 
-\item{fixedCols}{A vector of column ids or names, or a number of columns to freeze from left}
+\item{fixedCols}{A vector of column ids or names, columns will be fixed from first to the specified ones}
 
 \item{stretched}{Stretching mode for columns (default: "all")}
 
@@ -52,6 +53,8 @@ tabulator(
 \item{return_select_column_name}{Name for the returned selection column (default: "row_select")}
 
 \item{columnOrder}{A character vector specifying the desired column order (default: NULL)}
+
+\item{columns}{Manual columns setting. If set, auto creation is skipped.}
 }
 \description{
 Create a Tabulator widget
