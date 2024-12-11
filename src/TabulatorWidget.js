@@ -1,4 +1,4 @@
-import "tabulator-tables/dist/css/tabulator_bootstrap3.min.css";
+import "tabulator-tables/dist/css/tabulator_bootstrap4.css";
 
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { TabulatorToolbar } from "./TabulatorToolbar.js";

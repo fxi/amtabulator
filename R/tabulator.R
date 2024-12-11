@@ -39,7 +39,6 @@ tabulator <- function(
     return_select_column = FALSE,
     return_select_column_name = "row_select",
     columnOrder = NULL) {
-  
   # Prepare data and columns
   df <- as.data.frame(data, stringsAsFactors = FALSE)
   colNames <- colnames(df)
@@ -50,8 +49,10 @@ tabulator <- function(
 
   # Helper function to validate and get column indices
   get_col_indices <- function(cols, all_cols) {
-    if (is.null(cols)) return(integer(0))
-    
+    if (is.null(cols)) {
+      return(integer(0))
+    }
+
     if (is.numeric(cols)) {
       if (any(cols < 1 | cols > length(all_cols))) {
         stop("Column indices must be between 1 and ", length(all_cols))
@@ -81,15 +82,15 @@ tabulator <- function(
       if (length(readOnly) == 0) {
         stop("readOnly cannot be empty")
       }
-      
+
       # Check for mixed types
       has_numeric <- any(sapply(readOnly, function(x) is.numeric(x) || (is.character(x) && grepl("^[0-9]+$", x))))
       has_character <- any(sapply(readOnly, function(x) is.character(x) && !grepl("^[0-9]+$", x)))
-      
+
       if (has_numeric && has_character) {
         stop("readOnly must be either all indices or all names, no mixing allowed")
       }
-      
+
       # Now we can safely get indices
       if (has_numeric) {
         idx <- get_col_indices(as.numeric(readOnly), colNames)
@@ -137,7 +138,7 @@ tabulator <- function(
     if (i %in% fixed_cols) {
       col$frozen <- TRUE
     } else {
-      col$frozen <- FALSE  # Explicitly set to FALSE when not frozen
+      col$frozen <- FALSE # Explicitly set to FALSE when not frozen
     }
 
     # Set editor and formatter based on column type
@@ -179,6 +180,9 @@ tabulator <- function(
     history = TRUE,
     movableColumns = FALSE,
     resizableRows = FALSE,
+    columnDefaults = list(
+      resizable = FALSE
+    ),
     clipboard = TRUE,
     clipboardCopyRowRange = "range",
     clipboardPasteParser = "range",
@@ -194,6 +198,7 @@ tabulator <- function(
 
   # Merge user options with defaults
   options <- utils::modifyList(default_options, options)
+  browser()
 
   # Prepare dependencies
   deps <- htmlwidgets::getDependency("amtabulator", "amtabulator")
