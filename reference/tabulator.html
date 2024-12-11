@@ -52,7 +52,8 @@
 <span>  add_select_column <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_select_column <span class="op">=</span> <span class="cn">FALSE</span>,</span>
 <span>  return_select_column_name <span class="op">=</span> <span class="st">"row_select"</span>,</span>
-<span>  columnOrder <span class="op">=</span> <span class="cn">NULL</span></span>
+<span>  columnOrder <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  columns <span class="op">=</span> <span class="cn">NULL</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
 
@@ -73,7 +74,7 @@
 
 
 <dt id="arg-readonly">readOnly<a class="anchor" aria-label="anchor" href="#arg-readonly"></a></dt>
-<dd><p>A boolean for the whole table, or a vector of column ids or names</p></dd>
+<dd><p>A boolean for the whole table, or a vector of column ids or names (no mixing)</p></dd>
 
 
 <dt id="arg-columnheaders">columnHeaders<a class="anchor" aria-label="anchor" href="#arg-columnheaders"></a></dt>
@@ -81,11 +82,11 @@
 
 
 <dt id="arg-hide">hide<a class="anchor" aria-label="anchor" href="#arg-hide"></a></dt>
-<dd><p>A vector of column ids or names, or a number of columns to hide from left</p></dd>
+<dd><p>A vector of column ids or names to hide</p></dd>
 
 
 <dt id="arg-fixedcols">fixedCols<a class="anchor" aria-label="anchor" href="#arg-fixedcols"></a></dt>
-<dd><p>A vector of column ids or names, or a number of columns to freeze from left</p></dd>
+<dd><p>A vector of column ids or names, columns will be fixed from first to the specified ones</p></dd>
 
 
 <dt id="arg-stretched">stretched<a class="anchor" aria-label="anchor" href="#arg-stretched"></a></dt>
@@ -118,6 +119,10 @@
 
 <dt id="arg-columnorder">columnOrder<a class="anchor" aria-label="anchor" href="#arg-columnorder"></a></dt>
 <dd><p>A character vector specifying the desired column order (default: NULL)</p></dd>
+
+
+<dt id="arg-columns">columns<a class="anchor" aria-label="anchor" href="#arg-columns"></a></dt>
+<dd><p>Manual columns setting. If set, auto creation is skipped.</p></dd>
 
 </dl></div>
 
