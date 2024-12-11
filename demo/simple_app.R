@@ -48,6 +48,7 @@ server <- function(input, output, session) {
       return_select_column = TRUE,
       readOnly = read_only,
       fixed = "cat",
+      stretched = "last",
       columnOrder = c("cat", "species", "large"),
       hide = "hidden",
       options = list(
