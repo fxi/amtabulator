@@ -33,12 +33,12 @@ describe("TabulatorWidget Row Manipulation", () => {
   let element;
   let callbacks;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     element = document.createElement("div");
     document.body.appendChild(element);
     callbacks = new Map([["rowClick", vi.fn()]]);
     widget = new TabulatorWidget(element, callbacks);
-    widget.init({ options: { data: [] } });
+    await widget.init({ options: { data: [] } });
   });
 
   afterEach(() => {
