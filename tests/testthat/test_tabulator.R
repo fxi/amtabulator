@@ -209,21 +209,133 @@ test_that("tabulator handles columns parameter correctly", {
     list(field = "C", title = "Column C", editor = "number")
   )
 
-  # Test with columns parameter provided
+  # Test with primary columns parameter
   widget <- tabulator(data = df, columns = custom_columns)
   expect_equal(widget$x$options$columns, custom_columns)
-
-  # Ensure that the auto-generation is skipped
   expect_equal(length(widget$x$options$columns), 2)
   expect_equal(widget$x$options$columns[[1]]$field, "A")
   expect_equal(widget$x$options$columns[[2]]$field, "C")
 
-  # Test without columns parameter (auto-generation)
+  # Test with columns in options
+  options_columns <- list(
+    list(field = "B", title = "Column B", editor = "number"),
+    list(field = "C", title = "Column C", editor = "input")
+  )
+  widget_options <- tabulator(data = df, options = list(columns = options_columns))
+  expect_equal(widget_options$x$options$columns, options_columns)
+  expect_equal(length(widget_options$x$options$columns), 2)
+  expect_equal(widget_options$x$options$columns[[1]]$field, "B")
+  expect_equal(widget_options$x$options$columns[[2]]$field, "C")
+
+  # Test primary columns parameter takes precedence over options columns
+  widget_both <- tabulator(
+    data = df,
+    columns = custom_columns,
+    options = list(columns = options_columns)
+  )
+  expect_equal(widget_both$x$options$columns, custom_columns)
+  expect_equal(length(widget_both$x$options$columns), 2)
+  expect_equal(widget_both$x$options$columns[[1]]$field, "A")
+  expect_equal(widget_both$x$options$columns[[2]]$field, "C")
+
+  # Test without any columns parameter (auto-generation)
   widget_auto <- tabulator(data = df)
   expect_equal(length(widget_auto$x$options$columns), 3)
   expect_equal(widget_auto$x$options$columns[[1]]$field, "A")
   expect_equal(widget_auto$x$options$columns[[2]]$field, "B")
   expect_equal(widget_auto$x$options$columns[[3]]$field, "C")
+})
+
+# Test empty table initialization and proxy operations
+test_that("tabulator handles empty table initialization and updates", {
+  # Create empty table with only columns defined
+  columns <- list(
+    list(field = "A", title = "Column A", formatter = "number"),
+    list(field = "B", title = "Column B", formatter = "string")
+  )
+  widget <- tabulator(
+    data = NULL,
+    columns = columns
+  )
+  
+  # Check initial state
+  expect_equal(widget$x$options$columns, columns)
+  expect_equal(nrow(widget$x$options$data), 0)
+  
+  # Test proxy operations on empty table
+  session <- structure(
+    list(
+      ns = function(x) x,
+      sendCustomMessage = function(type, message) {
+        session$lastCustomMessage <<- list(type = type, message = message)
+      },
+      lastCustomMessage = NULL
+    ),
+    class = "ShinySession"
+  )
+  proxy <- tabulator_proxy("test", session)
+  
+  # Test update_data
+  new_data <- data.frame(A = 1:2, B = c("x", "y"))
+  tabulator_update_data(proxy, new_data)
+  expect_equal(session$lastCustomMessage$type, "tabulator_action")
+  expect_equal(session$lastCustomMessage$message$action, "update_data")
+  expect_equal(session$lastCustomMessage$message$value$data, new_data[1:2,])
+  
+  # Test replace_data
+  replace_data <- data.frame(A = 3:4, B = c("z", "w"))
+  tabulator_replace_data(proxy, replace_data)
+  expect_equal(session$lastCustomMessage$type, "tabulator_action")
+  expect_equal(session$lastCustomMessage$message$action, "replace_data")
+  expect_equal(session$lastCustomMessage$message$value, replace_data)
+})
+
+# Test replace_data functionality and structure
+test_that("tabulator_replace_data maintains data structure and replaces values", {
+  # Create a mock session
+  session <- structure(
+    list(
+      ns = function(x) x,
+      sendCustomMessage = function(type, message) {
+        session$lastCustomMessage <<- list(type = type, message = message)
+      },
+      lastCustomMessage = NULL
+    ),
+    class = "ShinySession"
+  )
+  proxy <- tabulator_proxy("test", session)
+  
+  # Test with different data structures
+  # 1. Simple numeric data
+  numeric_data <- data.frame(
+    A = 1:3,
+    B = 4:6
+  )
+  tabulator_replace_data(proxy, numeric_data)
+  expect_equal(session$lastCustomMessage$message$value, numeric_data)
+  
+  # 2. Mixed data types
+  mixed_data <- data.frame(
+    str = c("a", "b", "c"),
+    num = 1:3,
+    bool = c(TRUE, FALSE, TRUE),
+    stringsAsFactors = FALSE
+  )
+  tabulator_replace_data(proxy, mixed_data)
+  expect_equal(session$lastCustomMessage$message$value, mixed_data)
+  
+  # 3. Data with special characters
+  special_data <- data.frame(
+    name = c("John's", "Mary-Jane", "Smith & Co"),
+    value = 1:3,
+    stringsAsFactors = FALSE
+  )
+  tabulator_replace_data(proxy, special_data)
+  expect_equal(session$lastCustomMessage$message$value, special_data)
+  
+  # Test error handling
+  expect_error(tabulator_replace_data(proxy, list(a = 1)), "data must be a data.frame")
+  expect_error(tabulator_replace_data(proxy, NULL), "data must be a data.frame")
 })
 
 test_that("tabulator_output function creates a shiny output", {

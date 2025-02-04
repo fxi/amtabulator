@@ -63,12 +63,14 @@ HTMLWidgets.widget({
 Shiny.addCustomMessageHandler("tabulator_action", async function (message) {
   const { id, action, value } = message;
 
-  const { instance: tabulatorWidget } = HTMLWidgets.find("#" + id);
-
-  if (!tabulatorWidget) {
-    console.error("Widget not found for id:", id);
+  const widget = HTMLWidgets.find("#" + id);
+  
+  if (!widget || !widget.instance) {
+    console.warn(`Tabulator widget not found or not initialized for id: ${id}`);
     return;
   }
+  
+  const tabulatorWidget = widget.instance;
 
   switch (action) {
     case "update_data":
@@ -92,5 +94,9 @@ Shiny.addCustomMessageHandler("tabulator_action", async function (message) {
       Shiny.setInputValue(id + "_data", {
         data: JSON.stringify(data),
       });
+      break;
+    case "replace_data":
+      await tabulatorWidget.replaceData(value);
+      break;
   }
 });

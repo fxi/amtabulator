@@ -184,6 +184,9 @@ export class TabulatorWidget {
         case "update_where":
           await this.updateWhere(value);
           break;
+        case "replace_data":
+          await this.replaceData(value);
+          break;
         default:
           console.warn("Unknown action:", action);
       }
@@ -210,6 +213,15 @@ export class TabulatorWidget {
       }
     } catch (error) {
       console.error("Error updating data:", error);
+    }
+  }
+
+  async replaceData(data) {
+    try {
+      const formattedData = this.formatTable(data);
+      await this.table.setData(formattedData);
+    } catch (error) {
+      console.error("Error replacing data:", error);
     }
   }
 

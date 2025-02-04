@@ -112,12 +112,8 @@ create_columns <- function(
       col$visible <- FALSE
     }
 
-    # Handle frozen columns
-    if (i %in% fixed_cols) {
-      col$frozen <- TRUE
-    } else {
-      col$frozen <- FALSE # Explicitly set to FALSE when not frozen
-    }
+    # Handle frozen columns - always set explicitly
+    col$frozen <- if (i %in% fixed_cols) TRUE else FALSE
 
     # Set editor and formatter based on column type
     if (!readonly_cols[i]) {
@@ -146,7 +142,7 @@ create_columns <- function(
 
 #' Create a Tabulator widget
 #'
-#' @param data A data frame or matrix
+#' @param data A data frame or matrix, or NULL for empty table
 #' @param options A list of Tabulator.js options
 #' @param elementId The ID of the element
 #' @param readOnly A boolean for the whole table, or a vector of column ids or names (no mixing)
@@ -181,27 +177,18 @@ tabulator <- function(
   return_select_column_name = "row_select",
   columnOrder = NULL,
   columns = NULL) {
-  # Prepare data
-  df <- as.data.frame(data, stringsAsFactors = FALSE)
-  colNames <- colnames(df)
+  
+  # Handle NULL data
+  if (is.null(data)) {
+    data <- data.frame()
+  } else if (!is.data.frame(data)) {
+    data <- as.data.frame(data, stringsAsFactors = FALSE)
+  }
+  
+  colNames <- colnames(data)
 
   if (is.null(columnHeaders)) {
     columnHeaders <- colNames
-  }
-
-  # Decide on columns
-  if (is.null(columns)) {
-    # Generate columns using helper function
-    columns <- create_columns(
-      df = df,
-      colNames = colNames,
-      columnHeaders = columnHeaders,
-      readOnly = readOnly,
-      hide = hide,
-      fixedCols = fixedCols,
-      columnOrder = columnOrder,
-      dropDown = dropDown
-    )
   }
 
   # Default options
@@ -215,7 +202,7 @@ tabulator <- function(
     columns = NULL,
     index = NULL,
     height = "100%", # 100%=use container size
-    data = df,
+    data = data,
     tooltips = TRUE,
     addRowPos = "top",
     history = TRUE,
@@ -237,11 +224,35 @@ tabulator <- function(
     responsiveLayout = FALSE
   )
 
+  # Handle columns priority before merging options
+  final_columns <- if (!is.null(columns)) {
+    # If columns is provided as primary parameter, it takes precedence
+    columns
+  } else if (!is.null(options$columns)) {
+    # If columns is provided in options, use it exactly as is
+    options$columns
+  } else {
+    # If no columns are provided in either place, use auto-generated columns
+    create_columns(
+      df = data,
+      colNames = colNames,
+      columnHeaders = columnHeaders,
+      readOnly = readOnly,
+      hide = hide,
+      fixedCols = fixedCols,
+      columnOrder = columnOrder,
+      dropDown = dropDown
+    )
+  }
+
+  # Remove columns from options before merging to avoid conflicts
+  options$columns <- NULL
+  
   # Merge user options with defaults
   options <- utils::modifyList(default_options, options)
-
-  # Add columns to options
-  options$columns <- columns
+  
+  # Set the final columns configuration
+  options$columns <- final_columns
 
   # Prepare dependencies
   deps <- htmlwidgets::getDependency("amtabulator", "amtabulator")
@@ -382,6 +393,31 @@ tabulator_update_data <- function(proxy, data, chunk_size = 1000) {
       )
     )
   }
+}
+
+#' Replace all data in a Tabulator table
+#'
+#' @param proxy A Tabulator proxy object
+#' @param data A data frame with the new data
+#'
+#' @export
+tabulator_replace_data <- function(proxy, data) {
+  if (!inherits(proxy, "amtabulator_proxy")) {
+    stop("Invalid tabulator_proxy object")
+  }
+  
+  if (!is.data.frame(data)) {
+    stop("data must be a data.frame")
+  }
+
+  proxy$session$sendCustomMessage(
+    type = "tabulator_action",
+    message = list(
+      id = proxy$input_id,
+      action = "replace_data",
+      value = data
+    )
+  )
 }
 
 #' Update Tabulator values using a conditional system
