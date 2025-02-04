@@ -1,0 +1,10 @@
+# Changelog
+
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### 0.0.6 (2025-02-04)
+
+
+### Bug Fixes
+
+* column configuration handling ([0ee5dd4](https://github.com/fxi/amtabulator/commit/0ee5dd40e46753928516e289bcad8b3b18e48b32))
