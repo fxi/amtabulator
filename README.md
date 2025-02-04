@@ -121,12 +121,37 @@ npm run dev      # Watch mode
 npm run test     # Run all tests
 npm run build    # Production build
 
+# Committing Changes
+npm run commit   # Use commitizen for conventional commits
+
+# Release Process
+npm run release  # Create a new release (updates both JS and R versions)
+
 # R commands
-make all 
-make document
-make test
-make build
+make all         # Run all R package tasks
+make document    # Update documentation
+make test       # Run tests
+make build      # Build package
 ```
+
+### Contributing Guidelines
+
+1. Fork the repository and create your feature branch
+2. Install dependencies with `npm ci`
+3. Make your changes
+4. Run tests with `npm test` and ensure they pass
+5. Commit your changes using `npm run commit`
+   - This uses commitizen to ensure conventional commit messages
+   - Pre-commit hooks will run tests and build
+6. Push to your branch and create a Pull Request
+
+### Version Management
+
+The package uses [standard-version](https://github.com/conventional-changelog/standard-version) for version management, following semantic versioning:
+
+- Commit messages following conventional commits automatically determine version bumps
+- The release process synchronizes versions between package.json and DESCRIPTION
+- Pre-commit hooks ensure code quality before commits
 
 ## License
 
@@ -140,4 +165,3 @@ This package focuses on AccessMod requirements with emphasis on selection functi
 ## Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
-

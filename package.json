@@ -8,15 +8,29 @@
     "test": "vitest watch",
     "test:debug": "vitest --ui",
     "test:ci": "vitest run --coverage",
-    "build": "vite build"
+    "build": "vite build",
+    "commit": "cz",
+    "prepare": "husky install",
+    "release": "standard-version && node scripts/sync-r-version.js"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
   },
   "dependencies": {
     "tabulator-tables": "^6.2.5"
   },
   "devDependencies": {
+    "@commitlint/cli": "^19.7.1",
+    "@commitlint/config-conventional": "^19.7.1",
     "@vitest/coverage-v8": "^2.1.4",
     "@vitest/ui": "^2.1.4",
+    "commitizen": "^4.3.1",
+    "cz-conventional-changelog": "^3.3.0",
+    "husky": "^9.1.7",
     "jsdom": "^25.0.1",
+    "standard-version": "^9.5.0",
     "vite": "^5.0.0",
     "vitest": "^2.1.4"
   }
