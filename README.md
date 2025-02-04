@@ -124,14 +124,16 @@ npm run build    # Production build
 # Committing Changes
 npm run commit   # Use commitizen for conventional commits
 
-# Release Process
-npm run release  # Create a new release (updates both JS and R versions)
-
 # R commands
 make all         # Run all R package tasks
 make document    # Update documentation
 make test       # Run tests
 make build      # Build package
+
+# Release Process
+# -> once ready, tested
+npm run release  # Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)
+git push # Main branch. If pushed from the main branch, a version will be tested and built by a github workflow
 ```
 
 ### Contributing Guidelines
