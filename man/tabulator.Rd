@@ -24,7 +24,7 @@ tabulator(
 )
 }
 \arguments{
-\item{data}{A data frame or matrix}
+\item{data}{A data frame or matrix, or NULL for empty table}
 
 \item{options}{A list of Tabulator.js options}
 

@@ -397,8 +397,25 @@ tabulator_update_data <- function(proxy, data, chunk_size = 1000) {
 
 #' Replace all data in a Tabulator table
 #'
-#' @param proxy A Tabulator proxy object
-#' @param data A data frame with the new data
+#' This function completely replaces the existing data in a Tabulator table with new data.
+#' Unlike \code{tabulator_update_data}, this function replaces the entire dataset at once
+#' rather than updating it in chunks.
+#'
+#' @param proxy A Tabulator proxy object created by \code{tabulator_proxy()}
+#' @param data A data frame containing the new data to display in the table
+#'
+#' @return None (called for side effect)
+#'
+#' @examples
+#' \dontrun{
+#' # In server function
+#' proxy <- tabulator_proxy("table_id")
+#' new_data <- data.frame(
+#'   name = c("John", "Jane"),
+#'   age = c(25, 30)
+#' )
+#' tabulator_replace_data(proxy, new_data)
+#' }
 #'
 #' @export
 tabulator_replace_data <- function(proxy, data) {
