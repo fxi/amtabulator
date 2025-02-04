@@ -11,7 +11,7 @@
     "build": "vite build",
     "commit": "cz",
     "prepare": "husky install",
-    "release": "source ~/.Rprofile && npm run test:ci & make test & make check & standard-version && node scripts/sync-r-version.js"
+    "release": "npm run test:ci & make test & make check & standard-version && node scripts/sync-r-version.js"
   },
   "config": {
     "commitizen": {
