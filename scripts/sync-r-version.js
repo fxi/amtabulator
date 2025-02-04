@@ -1,35 +1,33 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs';
+import { readFileSync, writeFileSync, unlinkSync } from 'fs';
 import { execSync } from 'child_process';
 
-// Read package.json version
-const packageJson = JSON.parse(readFileSync('./package.json', 'utf8'));
-const version = packageJson.version;
-
-// Create R script to update DESCRIPTION version
-const rScript = `
-library(desc)
-desc <- desc::desc(file = "DESCRIPTION")
-desc$set_version("${version}")
-desc$write()
-`;
+const TEMP_R_SCRIPT = 'temp-version-update.R';
 
 try {
-  // Write temporary R script
-  writeFileSync('temp-version-update.R', rScript);
+  // Get version from package.json
+  const version = JSON.parse(readFileSync('./package.json')).version;
   
-  // Execute R script
+  // Create and run R script
+  const rScript = `
+    library(desc)
+    desc <- desc::desc(file = "DESCRIPTION")
+    desc$set_version("${version}")
+    desc$write()
+  `;
+  
+  writeFileSync(TEMP_R_SCRIPT, rScript);
   execSync('Rscript temp-version-update.R', { stdio: 'inherit' });
   
-  // Clean up
-  execSync('rm temp-version-update.R');
-  
-  console.log(`✓ Successfully synchronized R package version to ${version}`);
-  
-  // Stage the DESCRIPTION file
+  // Commit changes
   execSync('git add DESCRIPTION');
+  execSync('git commit -m "chore(release): bump version to ' + version + '"');
+  
+  console.log(`✓ R package version synced to ${version}`);
 } catch (error) {
-  console.error('Failed to sync R package version:', error);
+  console.error('Error:', error.message);
   process.exit(1);
+} finally {
+  try { unlinkSync(TEMP_R_SCRIPT); } catch {}
 }
