@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">amtabulator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.1</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.7</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -161,11 +161,45 @@
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="ex">npm</span> run test     <span class="co"># Run all tests</span></span>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="ex">npm</span> run build    <span class="co"># Production build</span></span>
 <span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># R commands</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="fu">make</span> all </span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="fu">make</span> document</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">make</span> test</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">make</span> build</span></code></pre></div>
+<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># Committing Changes</span></span>
+<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="ex">npm</span> run commit   <span class="co"># Use commitizen for conventional commits</span></span>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Release Process</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="ex">npm</span> run release  <span class="co"># Create a new release (updates both JS and R versions)</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co"># R commands</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">make</span> all         <span class="co"># Run all R package tasks</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="fu">make</span> document    <span class="co"># Update documentation</span></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="fu">make</span> test       <span class="co"># Run tests</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">make</span> build      <span class="co"># Build package</span></span></code></pre></div>
+<div class="section level3">
+<h3 id="contributing-guidelines">Contributing Guidelines<a class="anchor" aria-label="anchor" href="#contributing-guidelines"></a>
+</h3>
+<ol style="list-style-type: decimal">
+<li>Fork the repository and create your feature branch</li>
+<li>Install dependencies with <code>npm ci</code>
+</li>
+<li>Make your changes</li>
+<li>Run tests with <code>npm test</code> and ensure they pass</li>
+<li>Commit your changes using <code>npm run commit</code>
+<ul>
+<li>This uses commitizen to ensure conventional commit messages</li>
+<li>Pre-commit hooks will run tests and build</li>
+</ul>
+</li>
+<li>Push to your branch and create a Pull Request</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="version-management">Version Management<a class="anchor" aria-label="anchor" href="#version-management"></a>
+</h3>
+<p>The package uses <a href="https://github.com/conventional-changelog/standard-version" class="external-link">standard-version</a> for version management, following semantic versioning:</p>
+<ul>
+<li>Commit messages following conventional commits automatically determine version bumps</li>
+<li>The release process synchronizes versions between package.json and DESCRIPTION</li>
+<li>Pre-commit hooks ensure code quality before commits</li>
+</ul>
+</div>
 </div>
 <div class="section level2">
 <h2 id="license">License<a class="anchor" aria-label="anchor" href="#license"></a>
