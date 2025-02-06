@@ -564,6 +564,128 @@ test_that("tabulator_remove_last_row sends correct message", {
   expect_equal(session$lastCustomMessage$message$action, "remove_last_row")
 })
 
+# End-to-end integration test
+test_that("tabulator works correctly in a full workflow", {
+  # Create a mock Shiny session
+  session <- structure(
+    list(
+      ns = function(x) x,
+      sendCustomMessage = function(type, message) {
+        session$lastCustomMessage <<- list(type = type, message = message)
+      },
+      lastCustomMessage = NULL
+    ),
+    class = "ShinySession"
+  )
+
+  # Initial data
+  initial_data <- data.frame(
+    id = 1:3,
+    name = c("Alice", "Bob", "Charlie"),
+    age = c(25, 30, 35),
+    score = c(95.5, 88.0, 92.5),
+    active = c(TRUE, FALSE, TRUE),
+    stringsAsFactors = FALSE
+  )
+
+  # Create widget with various features enabled
+  widget <- tabulator(
+    data = initial_data,
+    add_export_bar = TRUE,
+    add_selector_bar = TRUE,
+    add_select_column = TRUE,
+    readOnly = c("id", "score"),  # Make some columns read-only
+    hide = "active",              # Hide a column
+    fixedCols = "id"             # Fix the ID column
+  )
+
+  # Verify initial state
+  expect_equal(nrow(widget$x$options$data), 3)
+  expect_equal(ncol(widget$x$options$data), 5)
+  expect_true(widget$x$options$add_export_bar)
+  expect_true(widget$x$options$add_selector_bar)
+  expect_true(widget$x$options$add_select_column)
+
+  # Verify column configuration
+  cols <- widget$x$options$columns
+  expect_true(cols[[1]]$frozen)  # ID column should be frozen
+  expect_null(cols[[1]]$editor)  # ID column should be read-only
+  expect_null(cols[[4]]$editor)  # Score column should be read-only
+  expect_false(cols[[5]]$visible)  # Active column should be hidden
+
+  # Create proxy for data manipulation
+  proxy <- tabulator_proxy("test", session)
+
+  # Test updating specific rows
+  update_data <- data.frame(
+    id = c(1, 3),
+    name = c("Alice Smith", "Charles"),
+    age = c(26, 36),
+    score = c(97.5, 94.0),
+    active = c(TRUE, TRUE),
+    stringsAsFactors = FALSE
+  )
+  tabulator_update_data(proxy, update_data)
+  expect_equal(session$lastCustomMessage$type, "tabulator_action")
+  expect_equal(session$lastCustomMessage$message$action, "update_data")
+  expect_equal(
+    session$lastCustomMessage$message$value$data[c(1, 2)],
+    update_data[c(1, 2)]  # Check first two columns
+  )
+
+  # Test conditional update
+  tabulator_update_where(
+    proxy,
+    col = "age",
+    value = 40,
+    whereCol = "score",
+    whereValue = 90,
+    operator = ">"
+  )
+  expect_equal(session$lastCustomMessage$message$action, "update_where")
+  expect_equal(session$lastCustomMessage$message$value$col, "age")
+  expect_equal(session$lastCustomMessage$message$value$value, 40)
+
+  # Test complete data replacement
+  new_data <- data.frame(
+    id = 4:6,
+    name = c("David", "Eve", "Frank"),
+    age = c(28, 32, 29),
+    score = c(89.5, 91.0, 93.5),
+    active = c(FALSE, TRUE, TRUE),
+    stringsAsFactors = FALSE
+  )
+  tabulator_replace_data(proxy, new_data)
+  expect_equal(session$lastCustomMessage$message$action, "replace_data")
+  expect_equal(session$lastCustomMessage$message$value, new_data)
+
+  # Test adding new rows
+  additional_rows <- data.frame(
+    id = 7:8,
+    name = c("Grace", "Henry"),
+    age = c(31, 33),
+    score = c(88.0, 90.5),
+    active = c(TRUE, FALSE),
+    stringsAsFactors = FALSE
+  )
+  tabulator_add_rows(proxy, additional_rows)
+  expect_equal(session$lastCustomMessage$message$action, "add_rows")
+  expect_equal(
+    session$lastCustomMessage$message$value$data,
+    additional_rows
+  )
+
+  # Simulate data retrieval (in a real app, this would come from the client)
+  simulated_response <- list(
+    data = jsonlite::toJSON(new_data)
+  )
+  retrieved_data <- tabulator_to_df(simulated_response)
+  expect_s3_class(retrieved_data, "data.frame")
+  expect_equal(nrow(retrieved_data), nrow(new_data))
+  expect_equal(ncol(retrieved_data), ncol(new_data))
+  expect_equal(colnames(retrieved_data), colnames(new_data))
+})
+
 test_that("row manipulation functions validate proxy input", {
   not_a_proxy <- list(input_id = "test")
 
