@@ -19,6 +19,8 @@ tabulator(
   add_select_column = FALSE,
   return_select_column = FALSE,
   return_select_column_name = "row_select",
+  add_export_bar = FALSE,
+  export_filename = "data",
   columnOrder = NULL,
   columns = NULL
 )
@@ -51,6 +53,10 @@ tabulator(
 \item{return_select_column}{Boolean to include selection status in returned data (default: FALSE)}
 
 \item{return_select_column_name}{Name for the returned selection column (default: "row_select")}
+
+\item{add_export_bar}{Boolean to add an export bar with CSV and JSON download buttons (default: FALSE)}
+
+\item{export_filename}{Base filename for exported files (default: "data")}
 
 \item{columnOrder}{A character vector specifying the desired column order (default: NULL)}
 
