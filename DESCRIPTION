@@ -1,6 +1,6 @@
 Package: amtabulator
 Title: Tabulator.js Integration in Shiny
-Version: 0.0.13
+Version: 0.0.14
 Date: 2024-09-14
 Authors@R: c(person("Fred", "Moser", email = "spam.frederic.moser@unige.ch", role = c("aut", "cre")))
 Maintainer: Fred Moser <spam.frederic.moser@unige.ch>
