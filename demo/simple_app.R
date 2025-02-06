@@ -47,6 +47,7 @@ server <- function(input, output, session) {
       return_select_column_name = "am_select",
       return_select_column = TRUE,
       readOnly = read_only,
+      add_export_bar = TRUE,
       fixed = "cat",
       stretched = "last",
       columnOrder = c("cat", "species", "large"),

@@ -7,6 +7,10 @@
   box-shadow: none;
 }
 
+.tabulator-with-exportbar {
+  padding-bottom: 0;
+}
+
 .tabulator-toolbar,
 .tabulator-export-bar {
   display: flex;
@@ -73,31 +77,38 @@
 .tabulator-row {
   border-bottom: 1px solid #eee;
   min-height: 20px;
-  margin-bottom: 0px;
+  margin-bottom: 0;
+  background-color: #fff;
 }
 
+.tabulator-row:nth-child(odd) {
+  background-color: #f9f9f9;
+}
 .tabulator-row:nth-child(2n) {
-  background-color: #eee;
+  background-color: inherit;
 }
 
 .tabulator-row:hover {
-  background-color: #eee;
+  background-color: rgba(51, 122, 183, 0.03);
 }
-.tabulator-row .tabulator-cell {
-  border-left: none !important;
-  border-right: 1px solid #eee !important;
-}
+
 .tabulator-row .tabulator-cell {
   padding: 3px 6px;
   font-size: 12px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  border-right: 1px solid #eee;
+  border-left: 1px solid #eee !important;
+}
+
+.tabulator-row .tabulator-cell:last-child {
+  border-right: none;
 }
 
 .tabulator-row .tabulator-cell.tabulator-frozen {
-  background: #fff;
-  border-right: 1px solid #eee;
+  background: inherit;
+  border-right: 2px solid #ddd;
 }
 
 /* Alternate Row Colors */
@@ -174,12 +185,17 @@
 }
 
 .tabulator-frozen {
-  border-right: 1px solid #ddd !important;
-  background-color: #f8f8f8 !important;
+  border-right: none !important;
+  background-color: inherit !important;
 }
 
 .tabulator-frozen.tabulator-col:last-child {
-  border-right: 1px solid #ddd !important;
+  border-right: none !important;
+}
+
+.tabulator-row .tabulator-cell.tabulator-frozen {
+  background-color: inherit !important;
+  border-right: none !important;
 }
 
 /* Selected Row */
