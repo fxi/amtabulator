@@ -1,6 +1,13 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { JSDOM } from "jsdom";
 import { TabulatorWidget } from "./TabulatorWidget";
+import { TabulatorExportBar } from "./TabulatorExportBar";
+
+vi.mock("./TabulatorExportBar", () => ({
+  TabulatorExportBar: vi.fn().mockImplementation(() => ({
+    createExportBar: vi.fn()
+  }))
+}));
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 
 // Setup DOM environment
@@ -12,21 +19,92 @@ global.HTMLElement = dom.window.HTMLElement;
 
 // Mock Tabulator with row manipulation methods
 vi.mock("tabulator-tables", () => ({
-  TabulatorFull: vi.fn().mockImplementation(() => ({
-    on: vi.fn(),
-    destroy: vi.fn(),
-    setFilter: vi.fn(),
-    updateData: vi.fn(),
-    replaceData: vi.fn(),
-    getData: vi.fn().mockReturnValue([]),
-    setData: vi.fn(),
-    searchRows: vi.fn(),
-    redraw: vi.fn(),
-    addData: vi.fn(),
-    getRow: vi.fn(),
-    getRows: vi.fn(),
-  })),
+  TabulatorFull: vi.fn().mockImplementation(() => {
+    const handlers = {};
+    return {
+      on: vi.fn((event, callback) => {
+        handlers[event] = handlers[event] || [];
+        handlers[event].push(callback);
+      }),
+      handlers,  // Expose handlers for testing
+      destroy: vi.fn(),
+      setFilter: vi.fn(),
+      updateData: vi.fn(),
+      replaceData: vi.fn(),
+      getData: vi.fn().mockReturnValue([]),
+      setData: vi.fn(),
+      searchRows: vi.fn(),
+      redraw: vi.fn(),
+      addData: vi.fn(),
+      getRow: vi.fn(),
+      getRows: vi.fn(),
+    };
+  }),
 }));
+
+describe("TabulatorWidget Export Bar", () => {
+  let widget;
+  let element;
+
+  beforeEach(() => {
+    element = document.createElement("div");
+    widget = new TabulatorWidget(element);
+    TabulatorExportBar.mockClear();
+  });
+
+  it("should create export bar when add_export_bar is true", async () => {
+    await widget.init({
+      options: {
+        add_export_bar: true,
+        export_filename: "test_export"
+      }
+    });
+
+    // Wait for tableBuilt event
+    const tableBuiltCallback = widget.table.handlers.tableBuilt[0];
+    tableBuiltCallback();
+
+    expect(TabulatorExportBar).toHaveBeenCalledWith(
+      widget.table,
+      expect.any(HTMLElement),
+      { export_filename: "test_export" }
+    );
+    expect(element.classList.contains("tabulator-with-exportbar")).toBe(true);
+  });
+
+  it("should not create export bar when add_export_bar is false", async () => {
+    await widget.init({
+      options: {
+        add_export_bar: false
+      }
+    });
+
+    // Wait for tableBuilt event
+    const tableBuiltCallback = widget.table.handlers.tableBuilt[0];
+    tableBuiltCallback();
+
+    expect(TabulatorExportBar).not.toHaveBeenCalled();
+    expect(element.classList.contains("tabulator-with-exportbar")).toBe(false);
+  });
+
+  it("should use default filename when export_filename is not provided", async () => {
+    await widget.init({
+      options: {
+        add_export_bar: true
+      }
+    });
+
+    // Wait for tableBuilt event
+    const tableBuiltCallback = widget.table.handlers.tableBuilt[0];
+    tableBuiltCallback();
+
+    expect(TabulatorExportBar).toHaveBeenCalledWith(
+      widget.table,
+      expect.any(HTMLElement),
+      { export_filename: "data" }
+    );
+  });
+});
 
 describe("TabulatorWidget Row Manipulation", () => {
   let widget;

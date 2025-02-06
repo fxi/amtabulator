@@ -156,6 +156,8 @@ create_columns <- function(
 #' @param add_select_column Boolean to add a select column (default: FALSE)
 #' @param return_select_column Boolean to include selection status in returned data (default: FALSE)
 #' @param return_select_column_name Name for the returned selection column (default: "row_select")
+#' @param add_export_bar Boolean to add an export bar with CSV and JSON download buttons (default: FALSE)
+#' @param export_filename Base filename for exported files (default: "data")
 #' @param columnOrder A character vector specifying the desired column order (default: NULL)
 #' @param columns Manual columns setting. If set, auto creation is skipped.
 #'
@@ -175,6 +177,8 @@ tabulator <- function(
   add_select_column = FALSE,
   return_select_column = FALSE,
   return_select_column_name = "row_select",
+  add_export_bar = FALSE,
+  export_filename = "data",
   columnOrder = NULL,
   columns = NULL) {
   
@@ -198,6 +202,8 @@ tabulator <- function(
     add_select_column = add_select_column,
     return_select_column = return_select_column,
     return_select_column_name = return_select_column_name,
+    add_export_bar = add_export_bar,
+    export_filename = if (add_export_bar) export_filename else NULL,
     # tabulator options
     columns = NULL,
     index = NULL,

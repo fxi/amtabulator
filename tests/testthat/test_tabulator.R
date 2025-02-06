@@ -21,6 +21,26 @@ test_that("tabulator widget handles options correctly", {
   expect_true(widget$x$options$movableColumns)
 })
 
+# Test export bar functionality
+test_that("tabulator handles export bar options correctly", {
+  data <- data.frame(x = 1:3, y = letters[1:3])
+  
+  # Test default options (no export bar)
+  widget <- tabulator(data)
+  expect_false(widget$x$options$add_export_bar)
+  expect_null(widget$x$options$export_filename)
+  
+  # Test with export bar enabled
+  widget <- tabulator(data, add_export_bar = TRUE)
+  expect_true(widget$x$options$add_export_bar)
+  expect_equal(widget$x$options$export_filename, "data")  # default filename
+  
+  # Test with custom export filename
+  widget <- tabulator(data, add_export_bar = TRUE, export_filename = "custom_export")
+  expect_true(widget$x$options$add_export_bar)
+  expect_equal(widget$x$options$export_filename, "custom_export")
+})
+
 # Test readOnly parameter
 test_that("tabulator handles readOnly parameter correctly", {
   df <- data.frame(
