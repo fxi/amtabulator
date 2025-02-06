@@ -129,9 +129,18 @@ make all         # Run all R package tasks
 make document    # Update documentation
 make test       # Run tests
 make build      # Build package
+```
 
-# Release Process
-# -> once ready, tested
+## Release (step by step)
+
+The actual build is performed using github action. However, it should be done first locally, and prepare the release. The release create the version and sync the version number 
+
+```bash
+# JS/TS Test
+npm run test
+# R build R + doc + test
+make all
+# if there is no error / doc to commit 
 npm run release  # Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)
 git push # Main branch. If pushed from the main branch, a version will be tested and built by a github workflow
 ```
