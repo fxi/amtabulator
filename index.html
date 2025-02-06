@@ -164,14 +164,16 @@
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="co"># Committing Changes</span></span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a><span class="ex">npm</span> run commit   <span class="co"># Use commitizen for conventional commits</span></span>
 <span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># Release Process</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="ex">npm</span> run release  <span class="co"># Create a new release (updates both JS and R versions)</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="co"># R commands</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">make</span> all         <span class="co"># Run all R package tasks</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="fu">make</span> document    <span class="co"># Update documentation</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="fu">make</span> test       <span class="co"># Run tests</span></span>
-<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="fu">make</span> build      <span class="co"># Build package</span></span></code></pre></div>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="co"># R commands</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">make</span> all         <span class="co"># Run all R package tasks</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="fu">make</span> document    <span class="co"># Update documentation</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="fu">make</span> test       <span class="co"># Run tests</span></span>
+<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">make</span> build      <span class="co"># Build package</span></span>
+<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a></span>
+<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="co"># Release Process</span></span>
+<span id="cb7-19"><a href="#cb7-19" tabindex="-1"></a><span class="co"># -&gt; once ready, tested</span></span>
+<span id="cb7-20"><a href="#cb7-20" tabindex="-1"></a><span class="ex">npm</span> run release  <span class="co"># Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)</span></span>
+<span id="cb7-21"><a href="#cb7-21" tabindex="-1"></a><span class="fu">git</span> push <span class="co"># Main branch. If pushed from the main branch, a version will be tested and built by a github workflow</span></span></code></pre></div>
 <div class="section level3">
 <h3 id="contributing-guidelines">Contributing Guidelines<a class="anchor" aria-label="anchor" href="#contributing-guidelines"></a>
 </h3>
