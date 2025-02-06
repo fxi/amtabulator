@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.14](https://github.com/fxi/amtabulator/compare/v0.0.13...v0.0.14) (2025-02-06)
+
+
+### Bug Fixes
+
+* **export_bar:** missing export bar, not built ([50bf2d9](https://github.com/fxi/amtabulator/commit/50bf2d901743d166d05e18075a05c4c56c49edf7))
+
 ### [0.0.13](https://github.com/fxi/amtabulator/compare/v0.0.12...v0.0.13) (2025-02-06)
 
 

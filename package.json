@@ -1,6 +1,6 @@
 {
   "name": "amtabulator",
-  "version": "0.0.13",
+  "version": "0.0.14",
   "description": "Tabulator wrapper for R/Shiny HTMLWidget",
   "type": "module",
   "scripts": {
