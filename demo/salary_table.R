@@ -50,6 +50,7 @@ server <- function(input, output, session) {
           list(column = "name", dir = "asc")
         )
       ),
+      add_export_bar = TRUE,
       # Column configuration
       columnHeaders = c(
         "ID",

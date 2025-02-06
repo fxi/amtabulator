@@ -117,18 +117,20 @@ amtabulator/
 npm ci
 
 # Development
-npm run dev      # Watch mode
-npm run test     # Run all tests
-npm run build    # Production build
+npm run build:all  # Build JS and install R package
+npm run dev:all   # Build all and watch JS changes
+npm run dev       # Watch JS only
+npm run test      # Run all tests
+npm run build     # Production build JS only
 
 # Committing Changes
-npm run commit   # Use commitizen for conventional commits
+npm run commit    # Use commitizen for conventional commits
 
 # R commands
-make all         # Run all R package tasks
-make document    # Update documentation
-make test       # Run tests
-make build      # Build package
+make all          # Run all R package tasks
+make document     # Update documentation
+make test         # Run tests
+make build        # Build package
 ```
 
 ## Release (step by step)

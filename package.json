@@ -9,9 +9,12 @@
     "test:debug": "vitest --ui",
     "test:ci": "vitest run --coverage",
     "build": "vite build",
+    "build:r": "R CMD INSTALL .",
+    "build:all": "npm run build && npm run build:r",
+    "dev:all": "npm run build:all && npm run dev",
     "commit": "cz",
     "prepare": "husky install",
-    "release": "npm run test:ci && make test && standard-version && make check && node scripts/sync-r-version.js"
+    "release": "npm run test:ci && make test && npm run build:all && standard-version && make check && node scripts/sync-r-version.js"
   },
   "config": {
     "commitizen": {
