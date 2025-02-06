@@ -1,5 +1,6 @@
 import { TabulatorFull as Tabulator } from "tabulator-tables";
 import { TabulatorToolbar } from "./TabulatorToolbar.js";
+import { TabulatorExportBar } from "./TabulatorExportBar.js";
 import { styleManager } from './styleManager';
 
 export class TabulatorWidget {
@@ -56,7 +57,7 @@ export class TabulatorWidget {
       tw.registerCallbacks(callbacks);
 
       /**
-       * Add selector bar
+       * Add selector and export bars
        */
       tw.table.on("tableBuilt", function () {
         if (options.add_selector_bar) {
@@ -65,6 +66,16 @@ export class TabulatorWidget {
           const toolsBar = new TabulatorToolbar(tw.table, tw.elSelector);
           tw.el.classList.add("tabulator-with-toolbar");
           toolsBar.createToolbar();
+        }
+        
+        if (options.add_export_bar) {
+          tw.elExport = document.createElement("div");
+          tw.el.appendChild(tw.elExport);
+          const exportBar = new TabulatorExportBar(tw.table, tw.elExport, {
+            export_filename: options.export_filename || 'data'
+          });
+          tw.el.classList.add("tabulator-with-exportbar");
+          exportBar.createExportBar();
         }
       });
       /**

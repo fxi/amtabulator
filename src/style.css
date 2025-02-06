@@ -1,4 +1,5 @@
-.tabulator-with-toolbar {
+.tabulator-with-toolbar,
+.tabulator-with-exportbar {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -6,7 +7,8 @@
   box-shadow: none;
 }
 
-.tabulator-toolbar {
+.tabulator-toolbar,
+.tabulator-export-bar {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -34,7 +36,9 @@
 }
 
 .tabulator-toolbar select,
-.tabulator-toolbar input {
+.tabulator-toolbar input,
+.tabulator-export-bar select,
+.tabulator-export-bar input {
   padding: 2px 6px;
   border: 1px solid #ddd;
   border-radius: 2px;
@@ -43,13 +47,16 @@
 }
 
 .tabulator-toolbar select:focus,
-.tabulator-toolbar input:focus {
+.tabulator-toolbar input:focus,
+.tabulator-export-bar select:focus,
+.tabulator-export-bar input:focus {
   border-color: #66afe9;
   outline: 0;
   box-shadow: none;
 }
 
-.tabulator-toolbar .link-button {
+.tabulator-toolbar .link-button,
+.tabulator-export-bar .link-button {
   color: #337ab7;
   text-decoration: none;
   cursor: pointer;
@@ -57,7 +64,8 @@
   border-radius: 2px;
 }
 
-.tabulator-toolbar .link-button:hover {
+.tabulator-toolbar .link-button:hover,
+.tabulator-export-bar .link-button:hover {
   background-color: rgba(51, 122, 183, 0.08);
 }
 
