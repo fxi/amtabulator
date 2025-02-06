@@ -139,7 +139,7 @@ The actual build is performed using github action. However, it should be done fi
 
 ```bash
 # JS/TS Test
-npm run test
+npm run test:ci
 # R build R + doc + test
 make all
 # if there is no error / doc to commit 
