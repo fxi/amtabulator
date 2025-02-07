@@ -112,40 +112,60 @@ amtabulator/
 
 ## Development
 
+### Local Development Commands
 ```bash
-# Install dependencies
+# Install dependencies (development)
 npm ci
 
 # Development
 npm run build:all  # Build JS and install R package
 npm run dev:all   # Build all and watch JS changes
 npm run dev       # Watch JS only
-npm run test      # Run all tests
+npm run test      # Run tests locally
 npm run build     # Production build JS only
 
-# Committing Changes
-npm run commit    # Use commitizen for conventional commits
-
-# R commands
+# R commands (local)
 make all          # Run all R package tasks
 make document     # Update documentation
 make test         # Run tests
 make build        # Build package
 ```
 
-## Release (step by step)
+### CI/CD Workflow
+The project uses GitHub Actions for continuous integration and deployment:
+- JavaScript testing and coverage (`js_test_coverage.yaml`)
+- R package checks across multiple platforms (`r_check.yaml`)
+- Documentation site generation (`r_pkgdown.yaml`)
+- R test coverage reporting (`r_test_coverage.yaml`)
 
-The actual build is performed using github action. However, it should be done first locally, and prepare the release. The release create the version and sync the version number 
+## Release Process
 
-```bash
-# JS/TS Test
-npm run test:ci
-# R build R + doc + test
-make all
-# if there is no error / doc to commit 
-npm run release  # Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)
-git push # push to the main branch will trigger all actions and build everything
-```
+1. **Local Testing**
+   ```bash
+   # Run JavaScript/TypeScript tests
+   npm run test:ci
+   
+   # Run R package checks
+   make all
+   ```
+
+2. **Version Management**
+   ```bash
+   # Create new release and update versions (if all tests pass)
+   npm run release  # Updates both JS (package.json) and R (DESCRIPTION) versions
+   ```
+
+3. **Deployment**
+   ```bash
+   # Push changes to trigger CI/CD workflows
+   git push  # Push to main branch
+   ```
+
+4. **CI/CD Process** (automated via GitHub Actions)
+   - Runs all tests and checks
+   - Builds documentation
+   - Updates coverage reports
+   - Deploys to GitHub Pages (if applicable)
 
 ### Contributing Guidelines
 
