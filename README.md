@@ -144,7 +144,7 @@ npm run test:ci
 make all
 # if there is no error / doc to commit 
 npm run release  # Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)
-git push # Main branch. If pushed from the main branch, a version will be tested and built by a github workflow
+git push # push to the main branch will trigger all actions and build everything
 ```
 
 ### Contributing Guidelines
