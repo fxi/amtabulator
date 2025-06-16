@@ -153,36 +153,63 @@
 <div class="section level2">
 <h2 id="development">Development<a class="anchor" aria-label="anchor" href="#development"></a>
 </h2>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Install dependencies</span></span>
+<div class="section level3">
+<h3 id="local-development-commands">Local Development Commands<a class="anchor" aria-label="anchor" href="#local-development-commands"></a>
+</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># Install dependencies (development)</span></span>
 <span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="ex">npm</span> ci</span>
 <span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co"># Development</span></span>
 <span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a><span class="ex">npm</span> run build:all  <span class="co"># Build JS and install R package</span></span>
 <span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a><span class="ex">npm</span> run dev:all   <span class="co"># Build all and watch JS changes</span></span>
 <span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a><span class="ex">npm</span> run dev       <span class="co"># Watch JS only</span></span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="ex">npm</span> run test      <span class="co"># Run all tests</span></span>
+<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a><span class="ex">npm</span> run test      <span class="co"># Run tests locally</span></span>
 <span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a><span class="ex">npm</span> run build     <span class="co"># Production build JS only</span></span>
 <span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co"># Committing Changes</span></span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="ex">npm</span> run commit    <span class="co"># Use commitizen for conventional commits</span></span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="co"># R commands</span></span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="fu">make</span> all          <span class="co"># Run all R package tasks</span></span>
-<span id="cb7-16"><a href="#cb7-16" tabindex="-1"></a><span class="fu">make</span> document     <span class="co"># Update documentation</span></span>
-<span id="cb7-17"><a href="#cb7-17" tabindex="-1"></a><span class="fu">make</span> test         <span class="co"># Run tests</span></span>
-<span id="cb7-18"><a href="#cb7-18" tabindex="-1"></a><span class="fu">make</span> build        <span class="co"># Build package</span></span></code></pre></div>
+<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a><span class="co"># R commands (local)</span></span>
+<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a><span class="fu">make</span> all          <span class="co"># Run all R package tasks</span></span>
+<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a><span class="fu">make</span> document     <span class="co"># Update documentation</span></span>
+<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a><span class="fu">make</span> test         <span class="co"># Run tests</span></span>
+<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a><span class="fu">make</span> build        <span class="co"># Build package</span></span></code></pre></div>
+</div>
+<div class="section level3">
+<h3 id="cicd-workflow">CI/CD Workflow<a class="anchor" aria-label="anchor" href="#cicd-workflow"></a>
+</h3>
+<p>The project uses GitHub Actions for continuous integration and deployment: - JavaScript testing and coverage (<code>js_test_coverage.yaml</code>) - R package checks across multiple platforms (<code>r_check.yaml</code>) - Documentation site generation (<code>r_pkgdown.yaml</code>) - R test coverage reporting (<code>r_test_coverage.yaml</code>)</p>
+</div>
 </div>
 <div class="section level2">
-<h2 id="release-step-by-step">Release (step by step)<a class="anchor" aria-label="anchor" href="#release-step-by-step"></a>
+<h2 id="release-process">Release Process<a class="anchor" aria-label="anchor" href="#release-process"></a>
 </h2>
-<p>The actual build is performed using github action. However, it should be done first locally, and prepare the release. The release create the version and sync the version number</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># JS/TS Test</span></span>
+<ol style="list-style-type: decimal">
+<li>
+<p><strong>Local Testing</strong></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="co"># Run JavaScript/TypeScript tests</span></span>
 <span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="ex">npm</span> run test:ci</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="co"># R build R + doc + test</span></span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">make</span> all</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="co"># if there is no error / doc to commit </span></span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a><span class="ex">npm</span> run release  <span class="co"># Create a new release and update versions, both JS (package.json) and R (DESCRIPTION)</span></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a><span class="fu">git</span> push <span class="co"># Main branch. If pushed from the main branch, a version will be tested and built by a github workflow</span></span></code></pre></div>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="co"># Run R package checks</span></span>
+<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a><span class="fu">make</span> all</span></code></pre></div>
+</li>
+<li>
+<p><strong>Version Management</strong></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="co"># Create new release and update versions (if all tests pass)</span></span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="ex">npm</span> run release  <span class="co"># Updates both JS (package.json) and R (DESCRIPTION) versions</span></span></code></pre></div>
+</li>
+<li>
+<p><strong>Deployment</strong></p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Push changes to trigger CI/CD workflows</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">git</span> push  <span class="co"># Push to main branch</span></span></code></pre></div>
+</li>
+<li>
+<p><strong>CI/CD Process</strong> (automated via GitHub Actions)</p>
+<ul>
+<li>Runs all tests and checks</li>
+<li>Builds documentation</li>
+<li>Updates coverage reports</li>
+<li>Deploys to GitHub Pages (if applicable)</li>
+</ul>
+</li>
+</ol>
 <div class="section level3">
 <h3 id="contributing-guidelines">Contributing Guidelines<a class="anchor" aria-label="anchor" href="#contributing-guidelines"></a>
 </h3>
@@ -248,7 +275,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>Fred Moser <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Fred Moser <br><small class="roles"> Author, maintainer </small>   </li>
 </ul>
 </div>
 
@@ -263,7 +290,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
