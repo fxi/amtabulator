@@ -51,6 +51,9 @@ describe("TabulatorToolbar", () => {
         .mockReturnValue([{ select: vi.fn(), deselect: vi.fn() }]),
       selectRow: vi.fn(),
       deselectRow: vi.fn(),
+      getSelectedRows: vi.fn().mockReturnValue([]),
+      getDataCount: vi.fn().mockReturnValue(mockData.length),
+      on: vi.fn(),
     };
 
     toolbar = new TabulatorToolbar(mockTable, targetElement);
@@ -181,5 +184,81 @@ describe("TabulatorToolbar", () => {
       .filter(Boolean); // Remove empty/default option
 
     expect(options).toEqual(["A", "B", "C"]);
+  });
+
+  // Test 6: Count Display Initialization
+  it("should create and initialize count display element", () => {
+    toolbar.createToolbar();
+
+    // Check if count display element exists
+    const countDisplay = targetElement.querySelector(".selection-count");
+    expect(countDisplay).toBeTruthy();
+
+    // Check initial count display (0 selected out of 2 total)
+    expect(countDisplay.textContent).toBe("(0/2)");
+  });
+
+  // Test 7: Count Display Updates
+  it("should update count display when selection changes", () => {
+    toolbar.createToolbar();
+    const countDisplay = targetElement.querySelector(".selection-count");
+
+    // Mock 1 selected row out of 2 total
+    mockTable.getSelectedRows.mockReturnValue([{ id: 1 }]);
+    mockTable.getDataCount.mockReturnValue(2);
+
+    // Manually trigger update (simulating event)
+    toolbar.updateCountDisplay();
+
+    expect(countDisplay.textContent).toBe("(1/2)");
+
+    // Mock all rows selected
+    mockTable.getSelectedRows.mockReturnValue([{ id: 1 }, { id: 2 }]);
+
+    toolbar.updateCountDisplay();
+    expect(countDisplay.textContent).toBe("(2/2)");
+  });
+
+  // Test 8: Count Display with Filtered Data
+  it("should show correct count when data is filtered", () => {
+    toolbar.createToolbar();
+    const countDisplay = targetElement.querySelector(".selection-count");
+
+    // Mock filtered data scenario: 1 selected out of 5 filtered rows
+    mockTable.getSelectedRows.mockReturnValue([{ id: 1 }]);
+    mockTable.getDataCount.mockReturnValue(5); // 5 visible/filtered rows
+
+    toolbar.updateCountDisplay();
+    expect(countDisplay.textContent).toBe("(1/5)");
+  });
+
+  // Test 9: Event Listeners Setup
+  it("should set up event listeners for count updates", () => {
+    toolbar.createToolbar();
+
+    // Verify that event listeners were registered
+    expect(mockTable.on).toHaveBeenCalledWith("rowSelectionChanged", expect.any(Function));
+    expect(mockTable.on).toHaveBeenCalledWith("dataFiltered", expect.any(Function));
+    expect(mockTable.on).toHaveBeenCalledWith("dataChanged", expect.any(Function));
+  });
+
+  // Test 10: Count Display Updates via Events
+  it("should update count display when table events are triggered", () => {
+    toolbar.createToolbar();
+    const countDisplay = targetElement.querySelector(".selection-count");
+
+    // Get the callback function that was registered for rowSelectionChanged
+    const rowSelectionCallback = mockTable.on.mock.calls.find(
+      call => call[0] === "rowSelectionChanged"
+    )[1];
+
+    // Mock different selection state
+    mockTable.getSelectedRows.mockReturnValue([{ id: 1 }, { id: 2 }]);
+    mockTable.getDataCount.mockReturnValue(3);
+
+    // Trigger the callback
+    rowSelectionCallback();
+
+    expect(countDisplay.textContent).toBe("(2/3)");
   });
 });

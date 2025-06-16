@@ -6,6 +6,7 @@ export class TabulatorToolbar {
     this._elColSelector = null;
     this._elOpSelector = null;
     this._elValueInput = null;
+    this._elCountDisplay = null;
   }
 
   createToolbar() {
@@ -16,15 +17,18 @@ export class TabulatorToolbar {
     this._elOpSelector = this.createOperatorSelector();
     this._elValueInput = this.createValueInput();
     const actionButtons = this.createActionButtons();
+    this._elCountDisplay = this.createCountDisplay();
 
     this._elToolbar.appendChild(selectionControls);
     this._elToolbar.appendChild(this._elColSelector);
     this._elToolbar.appendChild(this._elOpSelector);
     this._elToolbar.appendChild(this._elValueInput);
     this._elToolbar.appendChild(actionButtons);
+    this._elToolbar.appendChild(this._elCountDisplay);
 
     this.setupEventListeners();
     this.onColumnChange();
+    this.updateCountDisplay();
   }
 
   createSelectionControls() {
@@ -36,7 +40,13 @@ export class TabulatorToolbar {
     container.appendChild(
       this.createLinkButton("[None]", () => this.selectNone())
     );
+    container.appendChild(document.createTextNode(" "));
     return container;
+  }
+
+  createCountDisplay() {
+    const countDisplay = this.createElement("span", "selection-count");
+    return countDisplay;
   }
 
   createColumnSelector() {
@@ -82,6 +92,13 @@ export class TabulatorToolbar {
       this.onOperatorChange()
     );
     this._elValueInput.addEventListener("input", () => this.onValueInput());
+    
+    // Listen for row selection changes to update count display
+    this._table.on("rowSelectionChanged", () => this.updateCountDisplay());
+    
+    // Listen for data changes that might affect the total count
+    this._table.on("dataFiltered", () => this.updateCountDisplay());
+    this._table.on("dataChanged", () => this.updateCountDisplay());
   }
 
   onColumnChange() {
@@ -161,6 +178,12 @@ export class TabulatorToolbar {
 
   selectNone() {
     this._table.deselectRow();
+  }
+
+  updateCountDisplay() {
+      const selectedCount = this._table.getSelectedRows().length;
+      const totalCount = this._table.getDataCount();
+      this._elCountDisplay.textContent = `(${selectedCount}/${totalCount})`;
   }
 
   // Helper methods for creating HTML elements

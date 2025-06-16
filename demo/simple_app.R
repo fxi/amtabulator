@@ -117,4 +117,4 @@ server <- function(input, output, session) {
     })
   })
 }
-runApp(list(ui = ui, server = server), launch.browser = FALSE)
+runApp(list(ui = ui, server = server), launch.browser = FALSE, port=3185)
