@@ -1,6 +1,6 @@
 dependencies:
   - name: amtabulator
-    version: 0.0.1
+    version: 0.0.18
     src: htmlwidgets
     script:
       - dist/amtabulator.js
