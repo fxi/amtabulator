@@ -22,7 +22,7 @@
 
     <a class="navbar-brand me-2" href="index.html">amtabulator</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.17</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.0.18</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -198,7 +198,7 @@
 <li>
 <p><strong>Deployment</strong></p>
 <div class="sourceCode" id="cb10"><pre class="sourceCode bash"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co"># Push changes to trigger CI/CD workflows</span></span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">git</span> push  <span class="co"># Push to main branch</span></span></code></pre></div>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a><span class="fu">git</span> push <span class="at">--follow-tags</span> <span class="co"># Push to main branch</span></span></code></pre></div>
 </li>
 <li>
 <p><strong>CI/CD Process</strong> (automated via GitHub Actions)</p>
