@@ -25,6 +25,7 @@
     "tabulator-tables": "^6.2.5"
   },
   "devDependencies": {
+    "js-yaml": "^4.1.0",
     "@commitlint/cli": "^19.7.1",
     "@commitlint/config-conventional": "^19.7.1",
     "@vitest/coverage-v8": "^2.1.4",
