@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.0.17](https://github.com/fxi/amtabulator/compare/v0.0.16...v0.0.17) (2025-06-16)
+
+
+### Features
+
+* **row_count:** added selected row counts in toolbar based on table dim and filters ([5b02421](https://github.com/fxi/amtabulator/commit/5b024219a171f0cfa7eb7ae8a20df2e389f406b9))
+
 ### [0.0.16](https://github.com/fxi/amtabulator/compare/v0.0.15...v0.0.16) (2025-02-06)
 
 
