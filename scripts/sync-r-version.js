@@ -19,7 +19,7 @@ class VersionSyncer {
       this.readVersionFromPackage();
       this.updateRDescription();
       this.updateYamlFile();
-      //this.commitChanges();
+      this.commitChanges();
       this.log(`✓ Synced version to ${this.version}`);
     } catch (err) {
       this.error(err.message);
