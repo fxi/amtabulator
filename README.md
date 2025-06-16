@@ -158,7 +158,7 @@ The project uses GitHub Actions for continuous integration and deployment:
 3. **Deployment**
    ```bash
    # Push changes to trigger CI/CD workflows
-   git push  # Push to main branch
+   git push --follow-tags # Push to main branch
    ```
 
 4. **CI/CD Process** (automated via GitHub Actions)
